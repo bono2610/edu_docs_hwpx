@@ -24,6 +24,8 @@
   .chk{display:flex;align-items:center;gap:6px;margin-top:12px;font-size:14px;color:var(--ink)} .chk input{width:auto}
   .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
   .three{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px}
+  .four{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  @media (max-width:520px){.four{grid-template-columns:1fr 1fr}}
   button{background:var(--accent);color:#fff;border:0;border-radius:6px;padding:10px 16px;font-size:15px;cursor:pointer;margin-top:14px}
   button.light{background:#fff;color:var(--accent);border:1px solid var(--accent)}
   button.mini{margin:0;padding:4px 10px;font-size:13px}
@@ -55,6 +57,8 @@
   table.dt td.h{background:#e8edf6;font-weight:bold;text-align:center} table.dt td.c{text-align:center}
   .formt{text-align:center;font-size:20px;font-weight:bold;font-family:"Malgun Gothic",sans-serif;margin-bottom:6px}
   .pfig{text-align:center;margin:12px 0} .pfig img{max-width:100%} .pfig div{font-size:13px}
+  .pfig2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0;text-align:center} .pfig2 img{width:100%;max-height:220px;object-fit:contain} .pfig2 div{font-size:13px}
+  .meta{text-align:right;font-size:13px;margin-bottom:6px}
   /* 수료증 한 장 (A4 비율, 크기는 종이 너비 기준) */
   .count{font-size:14px;margin-bottom:8px;color:var(--muted)} .count b{color:var(--ink)}
   .cert{container-type:inline-size;width:100%;aspect-ratio:210/297;background:#fff;border:1px solid #bbb;position:relative;
@@ -84,11 +88,12 @@
 <body>
 <header>
   <h1>교육 문서 HWPX 만들기</h1>
-  <div class="sub">교육 신청 안내문과 수료증을 한글 문서(HWPX)로 만듭니다. 처음 열면 예시가 채워져 있으니 바꿀 부분만 고치세요. 내용과 그림은 이 PC 안에서만 다루고 어디에도 보내지 않습니다.</div>
+  <div class="sub">교육 신청 안내문, 수료증, 교육 결과 보고서를 한글 문서(HWPX)로 만듭니다. 처음 열면 예시가 채워져 있으니 바꿀 부분만 고치세요. 내용과 그림은 이 PC 안에서만 다루고 어디에도 보내지 않습니다.</div>
 </header>
 <nav class="tabs">
   <button data-tab="n" class="on">① 교육 신청 안내문</button>
   <button data-tab="c">② 수료증 발급</button>
+  <button data-tab="r">③ 교육 결과 보고서</button>
 </nav>
 
 <!-- ===================== 안내문 ===================== -->
@@ -171,6 +176,50 @@
     <p class="note">예시 명단과 직인 그림은 임의값입니다. 실제 직인 사용은 기관의 관인 관리 규정에 따라 주세요. 발급대장은 엑셀에서 바로 열립니다.</p>
   </section>
   <section class="card"><div class="count" id="c_count"></div><div id="c_paper"></div></section>
+</main>
+
+<!-- ===================== 결과 보고서 ===================== -->
+<main class="panel" id="panel_r">
+  <section class="card form">
+    <label>제목</label><input id="r_title">
+    <label>보고일·부서 <small>(제목 위 오른쪽, 비워도 됨)</small></label><input id="r_meta">
+    <label>보고 문구 <small>(한 줄이 한 문단)</small></label><textarea id="r_intro" rows="2"></textarea>
+    <label>교육 개요 <small>(한 줄에 「항목 | 내용」)</small></label><textarea id="r_overview" rows="6"></textarea>
+    <fieldset>
+      <legend>교육 실적</legend>
+      <div class="four">
+        <div><label>모집 인원</label><input id="r_cap" type="number" min="0"></div>
+        <div><label>신청 인원</label><input id="r_applied" type="number" min="0"></div>
+        <div><label>참석 인원</label><input id="r_attend" type="number" min="0"></div>
+        <div><label>수료 인원</label><input id="r_done" type="number" min="0"></div>
+      </div>
+      <p class="hint">비운 칸은 표에서 빠집니다. 수료율(수료 ÷ 참석)은 저절로 계산됩니다.</p>
+      <label>실적 설명 <small>(한 줄이 ○ 항목, - 아래 단계, ※ 참고)</small></label><textarea id="r_statsNote" rows="3"></textarea>
+    </fieldset>
+    <label>교육 내용 <small>(첫 줄은 표 제목줄, 칸은 | 로 나눔)</small></label><textarea id="r_timetable" rows="5"></textarea>
+    <label>만족도 조사 <small>(한 줄에 「문항 | 점수」, 5점 만점 — 전체 평균은 저절로)</small></label><textarea id="r_survey" rows="4"></textarea>
+    <label>만족도 설명·주요 의견</label><textarea id="r_surveyNote" rows="3"></textarea>
+    <label>주요 성과</label><textarea id="r_result" rows="3"></textarea>
+    <label>개선 사항 및 향후 계획</label><textarea id="r_improve" rows="3"></textarea>
+    <p class="hint">「응답 : 28명」처럼 쌍점(:) 앞 말은 굵게 나옵니다. 칸을 비우면 그 항목은 빠지고 번호가 다시 매겨집니다.</p>
+    <fieldset>
+      <legend>교육 사진</legend>
+      <input type="file" id="r_imgfile" accept="image/*" multiple>
+      <label class="chk"><input type="checkbox" id="r_pair" checked> 같은 자리의 사진은 두 장씩 나란히 놓기</label>
+      <p class="hint">기본은 「교육 사진」 항목에 들어갑니다. 나란히 놓을 때는 너비 설정 대신 반씩 나눠 씁니다.</p>
+      <div id="r_imgs"></div>
+    </fieldset>
+    <label class="chk"><input type="checkbox" id="r_attach" checked> 붙임 「수료자 명단」을 다음 쪽에 붙이기</label>
+    <label>수료자 명단 <small>(한 줄에 한 명: 소속, 직급, 성명 — ② 수료증과 같은 쓰는 법)</small></label>
+    <textarea id="r_roster" rows="5"></textarea>
+    <button id="r_dl">HWPX 내려받기</button>
+    <button id="r_import" class="light">①·② 탭 내용 가져오기</button>
+    <button id="r_sample" class="light">예시 다시 채우기</button>
+    <button id="r_clear" class="light">모두 비우기</button>
+    <div id="r_msg"></div>
+    <p class="note">「①·② 탭 내용 가져오기」는 안내문의 제목·개요·교육 내용과 수료증 명단을 이쪽으로 옮겨 옵니다. 예시의 숫자·의견·사진은 임의값입니다.</p>
+  </section>
+  <section class="card"><div id="r_paper"></div></section>
 </main>
 
 <script>
@@ -305,6 +354,27 @@ async function loadImageFile(file){
   const r=await canvasToImage(cv,file.name);r.url=url;return r;
 }
 
+// 그림 목록 화면. get: 그림 배열을 돌려주는 함수, posOpts: [[값, 이름], ...]
+function bindImgs(pfx,get,posOpts,render,defPos,defPct){
+  const box=$(pfx+'_imgs');
+  const draw=()=>{box.innerHTML=get().map((m,i)=>'<div class="imgrow"><img src="'+m.img.url+'" alt="">'+
+    '<div class="ctl"><select data-i="'+i+'" data-k="pos">'+posOpts.map(([v,t])=>'<option value="'+v+'"'+(m.pos===v?' selected':'')+'>'+t+'</option>').join('')+'</select>'+
+    '<select data-i="'+i+'" data-k="pct">'+[100,80,60,40].map(p=>'<option value="'+p+'"'+(m.pct===p?' selected':'')+'>너비 '+p+'%</option>').join('')+'</select>'+
+    '<span class="hint">'+m.img.w+'×'+m.img.h+'</span><button class="mini light" data-del="'+i+'">빼기</button>'+
+    '<input data-i="'+i+'" data-k="caption" placeholder="그림 설명 (비워도 됨)" value="'+esc(m.caption)+'"></div></div>').join('');};
+  const upd=e=>{const t=e.target;if(t.dataset.i==null)return;const m=get()[+t.dataset.i];m[t.dataset.k]=t.dataset.k==='pct'?+t.value:t.value;render();};
+  box.addEventListener('input',upd);box.addEventListener('change',upd);
+  box.addEventListener('click',e=>{const i=e.target.dataset.del;if(i==null)return;get().splice(+i,1);draw();render();});
+  $(pfx+'_imgfile').addEventListener('change',async e=>{
+    for(const f of e.target.files){
+      try{get().push({img:await loadImageFile(f),caption:'',pos:defPos,pct:defPct});}
+      catch(err){say(pfx,'「'+esc(f.name)+'」 그림을 읽지 못했습니다.');}
+    }
+    e.target.value='';draw();render();
+  });
+  return draw;
+}
+
 // ================= 탭 =================
 document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));
@@ -397,26 +467,15 @@ function ttWidths(n){
   const w=Array(n).fill(Math.floor(47600/n)); w[n-1]+=47600-w.reduce((a,b)=>a+b,0); return w;
 }
 function course(d){return (overviewRows(d).find(r=>/교육명|과정명/.test(r[0]))||[])[1]||'';}
-// -- 그림 목록 화면 --
-function nImgList(){
-  $('n_imgs').innerHTML=NIMGS.map((m,i)=>'<div class="imgrow"><img src="'+m.img.url+'" alt="">'+
-    '<div class="ctl"><select data-i="'+i+'" data-k="pos">'+N_POS.map(([v,t])=>'<option value="'+v+'"'+(m.pos===v?' selected':'')+'>'+t+'</option>').join('')+'</select>'+
-    '<select data-i="'+i+'" data-k="pct">'+[100,80,60,40].map(p=>'<option value="'+p+'"'+(m.pct===p?' selected':'')+'>너비 '+p+'%</option>').join('')+'</select>'+
-    '<span class="hint">'+m.img.w+'×'+m.img.h+'</span><button class="mini light" data-del="'+i+'">빼기</button>'+
-    '<input data-i="'+i+'" data-k="caption" placeholder="그림 설명 (비워도 됨)" value="'+esc(m.caption)+'"></div></div>').join('');
-}
-$('n_imgs').addEventListener('input',e=>{const t=e.target;if(t.dataset.i==null)return;const m=NIMGS[+t.dataset.i];
-  m[t.dataset.k]=t.dataset.k==='pct'?+t.value:t.value;nRender();});
-$('n_imgs').addEventListener('change',e=>{const t=e.target;if(t.tagName==='SELECT'){const m=NIMGS[+t.dataset.i];m[t.dataset.k]=t.dataset.k==='pct'?+t.value:t.value;nRender();}});
-$('n_imgs').addEventListener('click',e=>{const i=e.target.dataset.del;if(i==null)return;NIMGS.splice(+i,1);nImgList();nRender();});
-$('n_imgfile').addEventListener('change',async e=>{
-  for(const f of e.target.files){
-    try{NIMGS.push({img:await loadImageFile(f),caption:'',pos:'end',pct:80});}
-    catch(err){say('n','「'+esc(f.name)+'」 그림을 읽지 못했습니다.');}
-  }
-  e.target.value='';nImgList();nRender();
-});
+const nImgList=bindImgs('n',()=>NIMGS,N_POS,()=>nRender(),'end',80);
 // -- 미리보기 --
+function bulletHtml(s){
+  return bulletItems(s).map(([t,x])=>{
+    if(t==='sub') return '<div class="b2">- '+esc(x)+'</div>';
+    if(t==='note') return '<div class="b3">※ '+esc(x)+'</div>';
+    const lb=splitLabel(x);return '<div class="b1">○ '+(lb?'<b>'+esc(lb[0])+'</b> : '+esc(lb[1]):esc(x))+'</div>';
+  }).join('');
+}
 function nFigHtml(list){return list.map(m=>'<div class="pfig"><img src="'+m.img.url+'" style="width:'+m.pct+'%">'+(m.caption?'<div>&lt; '+esc(m.caption)+' &gt;</div>':'')+'</div>').join('');}
 function nRender(){
   const d=nData();
@@ -426,11 +485,7 @@ function nRender(){
     h+='<div class="sec"><span class="n">'+(i+1)+'</span>'+name+'</div>';
     if(k==='ov') h+='<table class="dt">'+overviewRows(d).map(([a,b])=>'<tr><td class="h" style="width:22%">'+esc(a)+'</td><td>'+esc(b)+'</td></tr>').join('')+'</table>';
     if(k==='tt'){const r=timeRows(d),n=Math.max(...r.map(x=>x.length));h+='<table class="dt">'+r.map((row,ri)=>'<tr>'+Array.from({length:n},(_,ci)=>'<td class="'+(ri===0?'h':(ci===n-2&&n>2?'':'c'))+'">'+esc(row[ci]||'')+'</td>').join('')+'</tr>').join('')+'</table>';}
-    if(k==='ap'||k==='nt') h+=bulletItems(k==='ap'?d.apply:d.notes).map(([t,x])=>{
-      if(t==='sub') return '<div class="b2">- '+esc(x)+'</div>';
-      if(t==='note') return '<div class="b3">※ '+esc(x)+'</div>';
-      const lb=splitLabel(x);return '<div class="b1">○ '+(lb?'<b>'+esc(lb[0])+'</b> : '+esc(lb[1]):esc(x))+'</div>';
-    }).join('');
+    if(k==='ap'||k==='nt') h+=bulletHtml(k==='ap'?d.apply:d.notes);
     h+=nFigHtml(imgsAt(d,k));
   });
   h+=nFigHtml(imgsAt(d,'end'));
@@ -636,7 +691,209 @@ $('c_sample').onclick=()=>cFill(C_SAMPLE,true);
 $('c_clear').onclick=()=>cFill({prefix:C_SAMPLE.prefix,start:'1',digits:'3',issued:C_SAMPLE.issued,issuer:C_SAMPLE.issuer,body:C_SAMPLE.body,sealmm:'20',logomm:'15'},false);
 CK.forEach(k=>$('c_'+k).addEventListener('input',cRender));$('c_omit').addEventListener('change',cRender);
 
-nFill(N_SAMPLE,true);cFill(C_SAMPLE,true);
+// ======================================================
+// ③ 교육 결과 보고서
+// ======================================================
+const RK=['title','meta','intro','overview','cap','applied','attend','done','statsNote','timetable','survey','surveyNote','result','improve','roster'];
+const R_SECS=[['교육 개요','ov'],['교육 실적','st'],['교육 내용','tt'],['만족도 조사 결과','sv'],['주요 성과','rs'],['개선 사항 및 향후 계획','im']];
+const R_POS=[['ph','「교육 사진」 항목'],['ov','교육 개요 아래'],['st','교육 실적 아래'],['tt','교육 내용 아래'],['sv','만족도 아래'],['rs','주요 성과 아래'],['im','개선 사항 아래']];
+let RIMGS=[];   // {img, caption, pos, pct}
+const R_SAMPLE={
+  title:'「보고서 작성 실무과정」 교육 결과 보고',
+  meta:'2026. 12. 11.(금)  ○○과',
+  intro:'직원들의 보고서 작성 역량을 높이기 위해 운영한 「보고서 작성 실무과정」의 결과를 아래와 같이 보고합니다.',
+  overview:['교육명 | 보고서 작성 실무과정',
+    '교육일시 | 2026. 12. 9.(수) ~ 12. 10.(목), 14:00~18:00 (2일, 총 8시간)',
+    '교육장소 | ○○청사 △△교육장',
+    '교육대상 | ○○기관 직원 중 희망자',
+    '강사 | 홍길동, 성춘향',
+    '교육방법 | 강의 및 조별 실습'].join('\n'),
+  cap:'30',applied:'34',attend:'30',done:'28',
+  statsNote:['미수료 : 2명 (출석시간 80% 미만)',
+    '- 업무 사정으로 둘째 날 불참'].join('\n'),
+  timetable:N_SAMPLE.timetable,
+  survey:['교육 내용이 업무에 도움이 되었다 | 4.6',
+    '강사의 설명이 이해하기 쉬웠다 | 4.5',
+    '교육 시간과 일정이 알맞았다 | 4.1',
+    '교육 장소와 시설이 알맞았다 | 4.3'].join('\n'),
+  surveyNote:['응답 : 28명 (응답률 100%)',
+    '주요 의견 : 실습 시간을 늘려 달라는 의견이 가장 많음',
+    '- 부서에서 실제로 쓰는 보고서로 첨삭받고 싶다는 의견'].join('\n'),
+  result:['교육생이 직접 쓴 한 장 보고서를 조별로 발표하고 서로 고쳐 보는 실습 중심으로 운영',
+    '전체 만족도 평균 4.4점(5점 만점)으로 교육생 호응이 높음'].join('\n'),
+  improve:['실습 시간 확대 : 다음 과정은 3일(12시간)로 늘려 실습 비중을 높임',
+    '교육 시기 조정 : 연말 업무가 몰리는 12월을 피해 상반기에 운영',
+    '※ 2027년 상반기 교육계획에 반영 예정'].join('\n'),
+  roster:C_SAMPLE.roster.split('\n').map(l=>l.split(',').slice(0,3).join(',')).join('\n')
+};
+function rData(){const d={};RK.forEach(k=>d[k]=val('r_'+k));d.pair=$('r_pair').checked;d.attach=$('r_attach').checked;return d;}
+const num=v=>{const n=parseFloat(String(v).replace(/,/g,''));return isNaN(n)?null:n;};
+function rStats(d){
+  const r=[['모집인원',d.cap],['신청인원',d.applied],['참석인원',d.attend],['수료인원',d.done]].filter(x=>x[1]!=='').map(([a,b])=>[a,b+'명']);
+  const at=num(d.attend), dn=num(d.done);
+  if(at&&dn!=null) r.push(['수료율',String(+(dn/at*100).toFixed(1))+'%']);
+  return r;
+}
+function surveyRows(d){return lines(d.survey).map(cols).map(c=>[c.slice(0,-1).join(' | ')||c[0],c.length>1?c[c.length-1]:'']);}
+function surveyAvg(d){const n=surveyRows(d).map(r=>num(r[1])).filter(x=>x!=null);return n.length?(n.reduce((a,b)=>a+b,0)/n.length).toFixed(1):null;}
+function rPeople(d){return people({roster:d.roster}).filter(p=>p.name);}
+function rCourse(d){return (lines(d.overview).map(cols).find(r=>/교육명|과정명/.test(r[0]))||[])[1]||'';}
+function rSections(d){
+  const has={ov:lines(d.overview).length,st:rStats(d).length||lines(d.statsNote).length,tt:lines(d.timetable).length,
+    sv:lines(d.survey).length||lines(d.surveyNote).length,rs:lines(d.result).length,im:lines(d.improve).length};
+  const s=R_SECS.filter(([,k])=>has[k]);
+  const keys=new Set(s.map(x=>x[1]));
+  if(RIMGS.some(m=>!keys.has(m.pos))) s.push(['교육 사진','ph']);
+  return s;
+}
+// 자리가 빠진 그림은 「교육 사진」 항목으로
+function rImgsAt(d,secs,pos){const keys=new Set(secs.map(x=>x[1]).filter(k=>k!=='ph'));return RIMGS.filter(m=>(keys.has(m.pos)?m.pos:'ph')===pos);}
+function eqWidths(n,W){W=W||47600;const w=Array(n).fill(Math.floor(W/n));w[n-1]+=W-w.reduce((a,b)=>a+b,0);return w;}
+function pairs(list){const r=[];for(let i=0;i<list.length;i+=2) r.push(list.slice(i,i+2));return r;}
+function rFigHtml(d,list){
+  if(!d.pair||list.length<2) return nFigHtml(list);
+  return pairs(list).map(pr=>'<div class="pfig2">'+pr.map(m=>'<div><img src="'+m.img.url+'">'+(m.caption?'<div>&lt; '+esc(m.caption)+' &gt;</div>':'')+'</div>').join('')+'</div>').join('');
+}
+function rFigXml(d,list,bag){
+  if(!d.pair||list.length<2) return nFigXml(list,bag);
+  const CW=23800, maxW=CW-1020-300, maxH=17000;
+  return pairs(list).map(pr=>{
+    const cells=[0,1].map(i=>{
+      const m=pr[i]; if(!m) return {t:'',c:C.N_BODY,p:P.CENTER,bf:1};
+      let w=maxW,h=w*m.img.h/m.img.w; if(h>maxH){w=w*maxH/h;h=maxH;}
+      return {x:picPara(P.CENTER,C.N_BODY,picXml(bag.use(m.img),w,h))+(m.caption?para(P.CENTER,[[C.N_NOTE,'< '+m.caption+' >']]):''),bf:1,h:Math.round(h)+1600};
+    });
+    return blank(C.SMALL,P.BODY)+table([CW,CW],[cells],{rowH:Math.max(...cells.map(c=>c.h||0)),padV:141,bf:1});
+  }).join('');
+}
+// -- 미리보기 --
+function rRender(){
+  const d=rData(), secs=rSections(d);
+  let h='<div class="paper">'+(d.meta?'<div class="meta">'+esc(d.meta)+'</div>':'')+'<div class="tbox"><div class="t">'+esc(d.title||'제목')+'</div></div>';
+  h+=lines(d.intro).map(t=>'<div class="intro">&nbsp;&nbsp;'+esc(t)+'</div>').join('');
+  const tbl=(rows,head)=>'<table class="dt">'+rows.map((row,ri)=>'<tr>'+row.map((x,ci)=>'<td class="'+(head(ri,ci)?'h':'c')+'">'+esc(x)+'</td>').join('')+'</tr>').join('')+'</table>';
+  secs.forEach(([name,k],i)=>{
+    h+='<div class="sec"><span class="n">'+(i+1)+'</span>'+name+'</div>';
+    if(k==='ov') h+='<table class="dt">'+lines(d.overview).map(cols).map(c=>'<tr><td class="h" style="width:22%">'+esc(c[0]||'')+'</td><td>'+esc(c.slice(1).join(' | '))+'</td></tr>').join('')+'</table>';
+    if(k==='st'){const r=rStats(d);if(r.length) h+=tbl([r.map(x=>x[0]),r.map(x=>x[1])],ri=>ri===0);h+=bulletHtml(d.statsNote);}
+    if(k==='tt'){const r=timeRows(d),n=Math.max(...r.map(x=>x.length));h+='<table class="dt">'+r.map((row,ri)=>'<tr>'+Array.from({length:n},(_,ci)=>'<td class="'+(ri===0?'h':(ci===n-2&&n>2?'':'c'))+'">'+esc(row[ci]||'')+'</td>').join('')+'</tr>').join('')+'</table>';}
+    if(k==='sv'){
+      const r=surveyRows(d),a=surveyAvg(d);
+      if(r.length) h+='<table class="dt"><tr><td class="h">문항</td><td class="h" style="width:28%">점수(5점 만점)</td></tr>'+
+        r.map(([q,v])=>'<tr><td>'+esc(q)+'</td><td class="c">'+esc(v)+'</td></tr>').join('')+
+        (a?'<tr><td class="h">전체 평균</td><td class="c"><b>'+a+'</b></td></tr>':'')+'</table>';
+      h+=bulletHtml(d.surveyNote);
+    }
+    if(k==='rs') h+=bulletHtml(d.result);
+    if(k==='im') h+=bulletHtml(d.improve);
+    h+=rFigHtml(d,rImgsAt(d,secs,k));
+  });
+  const ps=rPeople(d);
+  if(d.attach&&ps.length) h+='<p style="margin-top:18px"><b>붙임</b>&nbsp; 수료자 명단 1부.&nbsp; 끝.</p>';
+  h+='</div>';
+  if(d.attach&&ps.length){
+    const cs=rCourse(d);
+    h+='<div class="paper"><div class="formt">수 료 자 명 단</div>'+(cs?'<p style="text-align:center">('+esc(cs)+')</p>':'')+
+      '<table class="dt"><tr>'+['연번','소속','직급','성명','비고'].map(x=>'<td class="h">'+x+'</td>').join('')+'</tr>'+
+      ps.map((p,i)=>'<tr><td class="c">'+(i+1)+'</td><td class="c">'+esc(p.org)+'</td><td class="c">'+esc(p.rank)+'</td><td class="c">'+esc(p.name)+'</td><td></td></tr>').join('')+'</table>'+
+      '<p class="b3" style="margin-top:8px">※ 총 '+ps.length+'명</p></div>';
+  }
+  $('r_paper').innerHTML=h;
+}
+// -- 한글 문서 --
+function rSectionXml(d,bag){
+  const secs=rSections(d);
+  let out=firstPara(P.RIGHT,C.N_NOTE,d.meta,TPL.secNotice);
+  out+=table([47600],[[{x:para(P.CENTER,[[C.N_TITLE,d.title]]),bf:B.TITLE}]],{rowH:4000,padV:567});
+  out+=blank(C.N_BODY,P.BODY);
+  out+=lines(d.intro).map(t=>para(P.BODY,[[C.N_BODY,'  '+t]])).join('');
+  const hd=t=>({t,c:C.N_HEAD,p:P.CELL_C,bf:B.HEAD}), cc=t=>({t,c:C.N_CELL,p:P.CELL_C}), cl=t=>({t,c:C.N_CELL,p:P.CELL_L});
+  secs.forEach(([name,k],i)=>{
+    out+=blank(C.N_BODY,P.BODY)+TPL.SEC.replace(/⟦ID⟧/g,()=>nid()).replace('⟦N⟧',String(i+1)).replace('⟦H⟧',esc(name))+blank(C.SMALL,P.BODY);
+    if(k==='ov') out+=table([10400,37200],lines(d.overview).map(cols).map(c=>[hd(c[0]||''),cl(c.slice(1).join(' | '))]));
+    if(k==='st'){
+      const r=rStats(d);
+      if(r.length) out+=table(eqWidths(r.length),[r.map(x=>hd(x[0])),r.map(x=>cc(x[1]))]);
+      if(lines(d.statsNote).length) out+=blank(C.SMALL,P.BODY)+bulletXml(d.statsNote);
+    }
+    if(k==='tt'){
+      const r=timeRows(d),n=Math.max(...r.map(x=>x.length)),w=ttWidths(n);
+      out+=table(w,r.map((row,ri)=>Array.from({length:n},(_,ci)=>ri===0?hd(row[ci]||''):
+        {t:row[ci]||'',c:C.N_CELL,p:(ci===n-2&&n>2)?P.CELL_L:P.CELL_C})));
+    }
+    if(k==='sv'){
+      const r=surveyRows(d),a=surveyAvg(d);
+      if(r.length) out+=table([34000,13600],[[hd('문항'),hd('점수(5점 만점)')],...r.map(([q,v])=>[cl(q),cc(v)]),...(a?[[hd('전체 평균'),{t:a,c:C.N_HEAD,p:P.CELL_C}]]:[])]);
+      if(lines(d.surveyNote).length) out+=blank(C.SMALL,P.BODY)+bulletXml(d.surveyNote);
+    }
+    if(k==='rs') out+=bulletXml(d.result);
+    if(k==='im') out+=bulletXml(d.improve);
+    out+=rFigXml(d,rImgsAt(d,secs,k),bag);
+  });
+  const ps=rPeople(d);
+  if(d.attach&&ps.length){
+    out+=blank(C.N_BODY,P.BODY)+para(P.BODY,[[C.N_BODY_B,'붙임'],[C.N_BODY,'  수료자 명단 1부.  끝.']]);
+    const cs=rCourse(d);
+    out+=para(P.CENTER,[[C.N_FORM_T,'수 료 자 명 단']],{pageBreak:1});
+    if(cs) out+=para(P.CENTER,[[C.N_BODY,'('+cs+')']]);
+    out+=blank(C.N_BODY,P.BODY);
+    out+=table([4000,16600,8000,9000,10000],[['연번','소속','직급','성명','비고'].map(hd),
+      ...ps.map((p,i)=>[String(i+1),p.org,p.rank,p.name,''].map(cc))],{rowH:2600});
+    out+=blank(C.SMALL,P.BODY)+para(P.NOTE,[[C.N_NOTE,'※ 총 '+ps.length+'명']]);
+  }
+  return wrapSection(out);
+}
+$('r_dl').onclick=async()=>{
+  try{
+    const d=rData();
+    if(!d.title){say('r','제목을 먼저 적어 주세요.');return;}
+    IDN=1000;const bag=ImageBag();
+    const xml=rSectionXml(d,bag);
+    const prv=[d.meta,d.title].concat(lines(d.intro),lines(d.overview),lines(d.result)).filter(Boolean).join('\r\n');
+    const name=safeName(d.title,'교육결과보고')+'.hwpx';
+    saveBlob(await packHwpx(d.title,xml,prv,bag.list),name);
+    say('r',esc(name)+' 를 내려받았습니다'+(bag.list.length?' (사진 '+bag.list.length+'장 포함)':'')+'. 한글에서 열어 확인해 주세요.',true);
+  }catch(e){say('r','만들지 못했습니다: '+esc(e.message));}
+};
+$('r_import').onclick=()=>{
+  const n=nData(), c=cData(), ps=people(c).filter(p=>p.name), cs=course(n)||c.course, got=[];
+  if(cs){$('r_title').value='「'+cs+'」 교육 결과 보고';got.push('제목');
+    if(!val('r_intro')) $('r_intro').value='「'+cs+'」의 운영 결과를 아래와 같이 보고합니다.';}
+  const ov=overviewRows(n);
+  if(ov.length){
+    const cap=ov.find(r=>/모집인원/.test(r[0]));
+    if(cap){const m=cap[1].match(/(\d+)\s*명/);if(m) $('r_cap').value=m[1];}
+    $('r_overview').value=ov.filter(r=>!/모집인원/.test(r[0])).map(r=>r[0]+' | '+r[1]).join('\n');got.push('교육 개요');
+  }
+  if(lines(n.timetable).length){$('r_timetable').value=n.timetable;got.push('교육 내용');}
+  if(ps.length){$('r_roster').value=ps.map(p=>[p.org,p.rank,p.name].join(', ')).join('\n');$('r_done').value=ps.length;got.push('수료자 명단 '+ps.length+'명');}
+  rRender();
+  say('r',got.length?esc(got.join(', '))+'을(를) 가져왔습니다. 실적·만족도·성과는 직접 채워 주세요.':'가져올 내용이 없습니다. ①·② 탭을 먼저 채워 주세요.',got.length>0);
+};
+const rImgList=bindImgs('r',()=>RIMGS,R_POS,()=>rRender(),'ph',80);
+async function samplePhoto(title,sub,bg,fg){
+  const cv=document.createElement('canvas');cv.width=900;cv.height=600;const g=cv.getContext('2d');
+  g.fillStyle=bg;g.fillRect(0,0,900,600);
+  g.fillStyle='#ffffff';g.fillRect(250,60,400,220);g.strokeStyle=fg;g.lineWidth=6;g.strokeRect(250,60,400,220);
+  g.fillStyle=fg;g.font='bold 40px "Malgun Gothic",sans-serif';g.textAlign='center';g.fillText(title,450,185);
+  for(let r=0;r<2;r++) for(let i=0;i<5;i++){
+    const x=110+i*170,y=390+r*110;g.beginPath();g.arc(x,y-36,26,0,7);g.fill();g.fillRect(x-50,y,100,50);
+  }
+  g.fillStyle='rgba(0,0,0,.45)';g.font='24px "Malgun Gothic",sans-serif';g.fillText(sub,450,585);
+  return canvasToImage(cv,title+'.png');
+}
+async function rFill(v,withImg){
+  setVals('r_',v,RK);$('r_pair').checked=true;$('r_attach').checked=true;
+  RIMGS=withImg?[{img:await samplePhoto('강의','※ 예시 그림입니다. 실제 교육 사진으로 바꿔 넣으세요.','#e8eef6','#1f3f7a'),caption:'강의 모습(예시)',pos:'ph',pct:80},
+    {img:await samplePhoto('조별 실습','※ 예시 그림입니다. 실제 교육 사진으로 바꿔 넣으세요.','#eef5ee','#1f7a6b'),caption:'조별 실습(예시)',pos:'ph',pct:80}]:[];
+  rImgList();rRender();$('r_msg').innerHTML='';
+}
+$('r_sample').onclick=()=>rFill(R_SAMPLE,true);
+$('r_clear').onclick=()=>rFill({},false);
+RK.forEach(k=>$('r_'+k).addEventListener('input',rRender));
+['r_pair','r_attach'].forEach(id=>$(id).addEventListener('change',rRender));
+
+nFill(N_SAMPLE,true);cFill(C_SAMPLE,true);rFill(R_SAMPLE,true);
 </script>
 </body>
 </html>
