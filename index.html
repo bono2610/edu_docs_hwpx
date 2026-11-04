@@ -1,0 +1,642 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>교육 문서 HWPX 만들기</title>
+<style>
+  :root{--bg:#f6f4ef;--card:#fff;--ink:#222;--muted:#666;--line:#ddd6c8;--accent:#1f7a6b;--warn:#a8481c;--navy:#1f3f7a}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Malgun Gothic","Apple SD Gothic Neo",sans-serif;line-height:1.6}
+  header{padding:20px 24px 4px} h1{margin:0;font-size:24px} .sub{color:var(--muted);font-size:14px}
+  .tabs{display:flex;gap:6px;padding:10px 24px 0;max-width:1300px}
+  .tabs button{margin:0;background:transparent;color:var(--muted);border:1px solid var(--line);border-bottom:0;border-radius:8px 8px 0 0;padding:9px 18px;font-size:15px}
+  .tabs button.on{background:var(--card);color:var(--ink);font-weight:bold}
+  .panel{display:none} .panel.on{display:grid}
+  main.panel{grid-template-columns:1fr 1fr;gap:16px;padding:0 24px 40px;max-width:1300px}
+  @media (max-width:900px){main.panel.on{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px}
+  main .card.form{border-top-left-radius:0}
+  label{display:block;font-size:13px;color:var(--muted);margin-top:10px}
+  label small{color:#999}
+  input,textarea,select{width:100%;font:inherit;font-size:14px;padding:6px 8px;border:1px solid #ccc;border-radius:6px;background:#fff}
+  textarea{resize:vertical}
+  .chk{display:flex;align-items:center;gap:6px;margin-top:12px;font-size:14px;color:var(--ink)} .chk input{width:auto}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .three{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px}
+  button{background:var(--accent);color:#fff;border:0;border-radius:6px;padding:10px 16px;font-size:15px;cursor:pointer;margin-top:14px}
+  button.light{background:#fff;color:var(--accent);border:1px solid var(--accent)}
+  button.mini{margin:0;padding:4px 10px;font-size:13px}
+  .msg{padding:10px 12px;border-radius:6px;margin-top:10px;font-size:14px}
+  .msg.err{background:#fbe9e2;color:var(--warn)} .msg.ok{background:#e4f2ee;color:#155c50}
+  .note{font-size:13px;color:var(--muted)} .hint{font-size:12px;color:#888;margin:2px 0 0}
+  fieldset{border:1px dashed #c9c1b0;border-radius:8px;margin:14px 0 0;padding:4px 12px 12px}
+  legend{font-size:13px;color:var(--ink);font-weight:bold;padding:0 6px}
+  .imgrow{display:grid;grid-template-columns:64px 1fr;gap:10px;align-items:start;border-top:1px solid #eee;padding:10px 0 0;margin-top:10px}
+  .imgrow img{width:64px;height:64px;object-fit:contain;background:#f3f3f3;border:1px solid #ddd;border-radius:4px}
+  .imgrow .ctl{display:grid;grid-template-columns:1fr 1fr 90px auto;gap:6px;align-items:center}
+  .imgrow .ctl input{grid-column:1/-1}
+  .slot{display:grid;grid-template-columns:64px 1fr;gap:10px;align-items:center;margin-top:10px}
+  .slot img{width:64px;height:64px;object-fit:contain;background:#f3f3f3;border:1px solid #ddd;border-radius:4px}
+  .slot .row{display:flex;gap:6px;align-items:center;flex-wrap:wrap} .slot .row input[type=number]{width:80px}
+  .empty{display:flex;align-items:center;justify-content:center;width:64px;height:64px;border:1px dashed #ccc;border-radius:4px;color:#aaa;font-size:12px}
+  input[type=file]{padding:4px;font-size:13px}
+  /* 안내문 미리보기 */
+  .paper{background:#fff;border:1px solid #bbb;padding:30px 34px;min-height:600px;font-family:"Batang","바탕",serif;font-size:14px}
+  .paper + .paper{margin-top:16px}
+  .tbox{border-top:3px solid var(--navy);border-bottom:3px solid var(--navy);background:#f4f6fb;text-align:center;padding:10px 8px}
+  .tbox .t{font-family:"Malgun Gothic",sans-serif;font-size:20px;font-weight:bold;color:#092e99}
+  .tbox .s{font-family:"Malgun Gothic",sans-serif;font-weight:bold;font-size:13px;color:#333}
+  .intro{margin:14px 0;text-align:justify}
+  .sec{display:flex;align-items:center;gap:8px;margin:16px 0 6px;font-weight:bold;font-size:16px;font-family:"Malgun Gothic",sans-serif}
+  .sec .n{background:#3057b9;color:#fff;width:24px;text-align:center}
+  .b1{padding-left:22px;text-indent:-18px;margin:4px 0} .b2{padding-left:36px;text-indent:-12px;margin:2px 0} .b3{padding-left:22px;text-indent:-16px;font-size:13px;margin:2px 0}
+  table.dt{border-collapse:collapse;width:100%;font-size:12px;font-family:"Malgun Gothic",sans-serif} table.dt td{border:1px solid #555;padding:4px 6px}
+  table.dt td.h{background:#e8edf6;font-weight:bold;text-align:center} table.dt td.c{text-align:center}
+  .formt{text-align:center;font-size:20px;font-weight:bold;font-family:"Malgun Gothic",sans-serif;margin-bottom:6px}
+  .pfig{text-align:center;margin:12px 0} .pfig img{max-width:100%} .pfig div{font-size:13px}
+  /* 수료증 한 장 (A4 비율, 크기는 종이 너비 기준) */
+  .count{font-size:14px;margin-bottom:8px;color:var(--muted)} .count b{color:var(--ink)}
+  .cert{container-type:inline-size;width:100%;aspect-ratio:210/297;background:#fff;border:1px solid #bbb;position:relative;
+        font-family:"HY견명조","휴먼명조","Batang","바탕",serif;margin-bottom:16px;overflow:hidden}
+  .cert .in{position:absolute;inset:0;padding:9.5cqw 9.5cqw 7cqw}
+  .cert .frame{position:absolute;inset:4.76cqw;border:.5cqw double var(--navy)}
+  .cert .no{font-size:2.1cqw}
+  .cert .logo{text-align:center;margin-top:3cqw} .cert .logo img{display:inline-block}
+  .cert .tt{text-align:center;font-size:7.4cqw;font-weight:900;letter-spacing:1.2cqw;margin-top:9cqw;font-family:"HY헤드라인M","Malgun Gothic",sans-serif}
+  .cert .logo + .tt{margin-top:4cqw}
+  .cert table{margin:9cqw auto 0;border-collapse:collapse;font-size:2.7cqw}
+  .cert td{padding:.7cqw 0} .cert td.l{width:17cqw;font-weight:bold;text-align-last:justify} .cert td.c{width:4cqw;text-align:center}
+  .cert .body{font-size:2.7cqw;line-height:2.3;margin:5cqw 5.5cqw 0;text-align:justify}
+  .cert .dt{text-align:center;font-size:2.7cqw;margin-top:8cqw}
+  .cert .is{text-align:center;font-size:3.7cqw;font-weight:bold;margin-top:6cqw;letter-spacing:.3cqw}
+  .cert .is span{position:relative}
+  .cert .is .seal{position:absolute;top:50%;opacity:.95}
+  .cert .is small{font-size:1.9cqw;font-weight:normal;letter-spacing:0}
+  @media print{
+    @page{size:A4;margin:0}
+    body{background:#fff} header,.tabs,.card.form,.count{display:none!important}
+    main.panel.on{display:block;padding:0;max-width:none} .card{border:0;padding:0}
+    .cert{width:210mm;border:0;margin:0;page-break-after:always;break-after:page}
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>교육 문서 HWPX 만들기</h1>
+  <div class="sub">교육 신청 안내문과 수료증을 한글 문서(HWPX)로 만듭니다. 처음 열면 예시가 채워져 있으니 바꿀 부분만 고치세요. 내용과 그림은 이 PC 안에서만 다루고 어디에도 보내지 않습니다.</div>
+</header>
+<nav class="tabs">
+  <button data-tab="n" class="on">① 교육 신청 안내문</button>
+  <button data-tab="c">② 수료증 발급</button>
+</nav>
+
+<!-- ===================== 안내문 ===================== -->
+<main class="panel on" id="panel_n">
+  <section class="card form">
+    <label>제목</label><input id="n_title">
+    <label>부제 <small>(한 줄, 비워도 됨)</small></label><input id="n_subtitle">
+    <label>안내 문구 <small>(한 줄이 한 문단)</small></label><textarea id="n_intro" rows="3"></textarea>
+    <label>교육 개요 <small>(한 줄에 「항목 | 내용」)</small></label><textarea id="n_overview" rows="7"></textarea>
+    <label>교육 내용 <small>(첫 줄은 표 제목줄, 칸은 | 로 나눔)</small></label><textarea id="n_timetable" rows="6"></textarea>
+    <label>신청 방법 <small>(한 줄이 ○ 항목, - 로 시작하면 아래 단계, ※ 는 참고)</small></label><textarea id="n_apply" rows="5"></textarea>
+    <label>유의 사항 <small>(쓰는 법은 위와 같음)</small></label><textarea id="n_notes" rows="5"></textarea>
+    <p class="hint">「신청기간 : 11. 5.」처럼 쌍점(:) 앞 말은 굵게 나옵니다. 칸을 비우면 그 항목은 문서에서 빠지고 번호가 다시 매겨집니다.</p>
+    <fieldset>
+      <legend>그림 넣기</legend>
+      <input type="file" id="n_imgfile" accept="image/*" multiple>
+      <p class="hint">포스터·약도·사진 등. 그림마다 들어갈 자리, 크기, 설명을 정할 수 있습니다. PNG·JPG가 가장 잘 맞습니다.</p>
+      <div id="n_imgs"></div>
+    </fieldset>
+    <label class="chk"><input type="checkbox" id="n_form" checked> 붙임 「교육 신청서」 양식을 다음 쪽에 붙이기</label>
+    <div class="two">
+      <div><label>신청서 아래 안내</label><input id="n_formNote"></div>
+      <div><label>신청서 빈 줄 수</label><input id="n_formRows" type="number" min="1" max="30"></div>
+    </div>
+    <button id="n_dl">HWPX 내려받기</button>
+    <button id="n_sample" class="light">예시 다시 채우기</button>
+    <button id="n_clear" class="light">모두 비우기</button>
+    <div id="n_msg"></div>
+    <p class="note">예시의 이름·연락처·장소·그림은 임의값입니다. 내려받은 파일은 한글에서 열어 확인해 주세요.</p>
+  </section>
+  <section class="card"><div id="n_paper"></div></section>
+</main>
+
+<!-- ===================== 수료증 ===================== -->
+<main class="panel" id="panel_c">
+  <section class="card form">
+    <label>수료자 명단 <small>(한 줄에 한 명: 소속, 직급, 성명, 생년월일 — 생년월일·직급은 비워도 됨)</small></label>
+    <textarea id="c_roster" rows="7"></textarea>
+    <p class="hint">엑셀에서 「소속·직급·성명」 칸을 그대로 복사해 붙여 넣어도 됩니다(탭으로 나뉨).</p>
+    <label>과정명</label><input id="c_course">
+    <div class="two">
+      <div><label>교육기간</label><input id="c_period"></div>
+      <div><label>교육시간 <small>(비워도 됨)</small></label><input id="c_hours"></div>
+    </div>
+    <label>본문 문구 <small>({성명} {과정명} {교육기간} {교육시간} 을 넣으면 사람마다 바뀝니다)</small></label>
+    <textarea id="c_body" rows="3"></textarea>
+    <div class="three">
+      <div><label>증서번호 앞부분</label><input id="c_prefix"></div>
+      <div><label>시작 번호</label><input id="c_start" type="number" min="1"></div>
+      <div><label>자릿수</label><input id="c_digits" type="number" min="1" max="6"></div>
+    </div>
+    <div class="two">
+      <div><label>발급일</label><input id="c_issued" type="date"></div>
+      <div><label>발급자</label><input id="c_issuer"></div>
+    </div>
+    <fieldset>
+      <legend>그림 넣기</legend>
+      <div class="slot">
+        <div id="c_sealthumb"></div>
+        <div>
+          <div style="font-size:14px">직인 <small class="hint">— 발급자 이름 끝 글자에 겹쳐 찍힙니다. 배경이 투명한 PNG가 좋습니다.</small></div>
+          <div class="row"><input type="file" id="c_sealfile" accept="image/*" style="width:auto;flex:1"> 크기 <input type="number" id="c_sealmm" min="8" max="40"> mm <button class="mini light" id="c_sealdel">빼기</button></div>
+        </div>
+      </div>
+      <div class="slot">
+        <div id="c_logothumb"></div>
+        <div>
+          <div style="font-size:14px">상단 로고 <small class="hint">— 「수 료 증」 위 가운데에 들어갑니다. 비워도 됩니다.</small></div>
+          <div class="row"><input type="file" id="c_logofile" accept="image/*" style="width:auto;flex:1"> 높이 <input type="number" id="c_logomm" min="5" max="40"> mm <button class="mini light" id="c_logodel">빼기</button></div>
+        </div>
+      </div>
+    </fieldset>
+    <label class="chk"><input type="checkbox" id="c_omit"> 직인 그림이 없을 때 발급자 옆에 「(직인생략)」 표시</label>
+    <button id="c_dl">HWPX 내려받기</button>
+    <button id="c_csv" class="light">발급대장(CSV) 내려받기</button>
+    <button id="c_print" class="light">바로 인쇄 / PDF</button>
+    <button id="c_sample" class="light">예시 다시 채우기</button>
+    <button id="c_clear" class="light">모두 비우기</button>
+    <div id="c_msg"></div>
+    <p class="note">예시 명단과 직인 그림은 임의값입니다. 실제 직인 사용은 기관의 관인 관리 규정에 따라 주세요. 발급대장은 엑셀에서 바로 열립니다.</p>
+  </section>
+  <section class="card"><div class="count" id="c_count"></div><div id="c_paper"></div></section>
+</main>
+
+<script>
+const TPL={"header": "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", "version": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?><hv:HCFVersion xmlns:hv=\"http://www.hancom.co.kr/hwpml/2011/version\" tagetApplication=\"WORDPROCESSOR\" major=\"5\" minor=\"0\" micro=\"5\" buildNumber=\"0\" os=\"1\" xmlVersion=\"1.4\" application=\"Hancom Office Hangul\" appVersion=\"9, 1, 1, 5656 WIN32LEWindows_Unknown_Version\"/>", "settings": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?><ha:HWPApplicationSetting xmlns:ha=\"http://www.hancom.co.kr/hwpml/2011/app\" xmlns:config=\"urn:oasis:names:tc:opendocument:xmlns:config:1.0\"><ha:CaretPosition listIDRef=\"0\" paraIDRef=\"3\" pos=\"0\"/><config:config-item-set name=\"PrintInfo\"><config:config-item name=\"PrintAutoFootNote\" type=\"boolean\">false</config:config-item><config:config-item name=\"PrintAutoHeadNote\" type=\"boolean\">false</config:config-item><config:config-item name=\"PrintMethod\" type=\"short\">0</config:config-item><config:config-item name=\"OverlapSize\" type=\"short\">0</config:config-item><config:config-item name=\"PrintCropMark\" type=\"short\">0</config:config-item><config:config-item name=\"BinderHoleType\" type=\"short\">0</config:config-item><config:config-item name=\"ZoomX\" type=\"short\">100</config:config-item><config:config-item name=\"ZoomY\" type=\"short\">100</config:config-item></config:config-item-set></ha:HWPApplicationSetting>", "container": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?><ocf:container xmlns:ocf=\"urn:oasis:names:tc:opendocument:xmlns:container\" xmlns:hpf=\"http://www.hancom.co.kr/schema/2011/hpf\"><ocf:rootfiles><ocf:rootfile full-path=\"Contents/content.hpf\" media-type=\"application/hwpml-package+xml\"/><ocf:rootfile full-path=\"Preview/PrvText.txt\" media-type=\"text/plain\"/></ocf:rootfiles></ocf:container>", "manifest": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?><odf:manifest xmlns:odf=\"urn:oasis:names:tc:opendocument:xmlns:manifest:1.0\"/>", "secOpen": "<hs:sec xmlns:ha=\"http://www.hancom.co.kr/hwpml/2011/app\" xmlns:hp=\"http://www.hancom.co.kr/hwpml/2011/paragraph\" xmlns:hp10=\"http://www.hancom.co.kr/hwpml/2016/paragraph\" xmlns:hs=\"http://www.hancom.co.kr/hwpml/2011/section\" xmlns:hc=\"http://www.hancom.co.kr/hwpml/2011/core\" xmlns:hh=\"http://www.hancom.co.kr/hwpml/2011/head\" xmlns:hhs=\"http://www.hancom.co.kr/hwpml/2011/history\" xmlns:hm=\"http://www.hancom.co.kr/hwpml/2011/master-page\" xmlns:hpf=\"http://www.hancom.co.kr/schema/2011/hpf\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:opf=\"http://www.idpf.org/2007/opf/\" xmlns:ooxmlchart=\"http://www.hancom.co.kr/hwpml/2016/ooxmlchart\" xmlns:hwpunitchar=\"http://www.hancom.co.kr/hwpml/2016/HwpUnitChar\" xmlns:epub=\"http://www.idpf.org/2007/ops\" xmlns:config=\"urn:oasis:names:tc:opendocument:xmlns:config:1.0\">", "C": {"CERT_TITLE": 206, "CERT_TEXT": 207, "CERT_ISSUER": 208, "SMALL": 209, "CERT_LABEL": 210, "N_TITLE": 211, "N_SUB": 212, "N_BODY": 213, "N_CELL": 214, "N_HEAD": 215, "N_NOTE": 216, "N_FORM_T": 217, "N_BODY_B": 218}, "P": {"BULLET": 58, "SUB": 59, "NOTE": 60, "CENTER": 61, "CERT_INFO": 62, "CERT_BODY": 63, "CELL_L": 64, "CELL_C": 65, "BODY": 66, "TBL": 67, "RIGHT": 68, "DIST": 69, "LEFT": 70}, "B": {"HEAD": 22, "PAGE": 23, "TITLE": 24, "CELL": 3}, "SEC": "<hp:p xmlns:hp=\"http://www.hancom.co.kr/hwpml/2011/paragraph\" id=\"0\" paraPrIDRef=\"37\" styleIDRef=\"0\" pageBreak=\"0\" columnBreak=\"0\" merged=\"0\"><hp:run charPrIDRef=\"29\"><hp:tbl id=\"⟦ID⟧\" zOrder=\"0\" numberingType=\"TABLE\" textWrap=\"TOP_AND_BOTTOM\" textFlow=\"BOTH_SIDES\" lock=\"0\" dropcapstyle=\"None\" pageBreak=\"CELL\" repeatHeader=\"1\" rowCnt=\"1\" colCnt=\"3\" cellSpacing=\"0\" borderFillIDRef=\"3\" noAdjust=\"0\"><hp:sz width=\"14534\" widthRelTo=\"ABSOLUTE\" height=\"2924\" heightRelTo=\"ABSOLUTE\" protect=\"0\"/><hp:pos treatAsChar=\"1\" affectLSpacing=\"0\" flowWithText=\"1\" allowOverlap=\"0\" holdAnchorAndSO=\"0\" vertRelTo=\"PARA\" horzRelTo=\"COLUMN\" vertAlign=\"TOP\" horzAlign=\"LEFT\" vertOffset=\"0\" horzOffset=\"0\"/><hp:outMargin left=\"141\" right=\"141\" top=\"141\" bottom=\"141\"/><hp:inMargin left=\"510\" right=\"510\" top=\"141\" bottom=\"141\"/><hp:tr><hp:tc name=\"\" header=\"0\" hasMargin=\"0\" protect=\"0\" editable=\"0\" dirty=\"0\" borderFillIDRef=\"16\"><hp:subList id=\"\" textDirection=\"HORIZONTAL\" lineWrap=\"BREAK\" vertAlign=\"CENTER\" linkListIDRef=\"0\" linkListNextIDRef=\"0\" textWidth=\"0\" textHeight=\"0\" hasTextRef=\"0\" hasNumRef=\"0\"><hp:p id=\"2147483648\" paraPrIDRef=\"16\" styleIDRef=\"0\" pageBreak=\"0\" columnBreak=\"0\" merged=\"0\"><hp:run charPrIDRef=\"30\"><hp:t>⟦N⟧</hp:t></hp:run></hp:p></hp:subList><hp:cellAddr colAddr=\"0\" rowAddr=\"0\"/><hp:cellSpan colSpan=\"1\" rowSpan=\"1\"/><hp:cellSz width=\"3864\" height=\"2924\"/><hp:cellMargin left=\"510\" right=\"510\" top=\"141\" bottom=\"141\"/></hp:tc><hp:tc name=\"\" header=\"0\" hasMargin=\"1\" protect=\"0\" editable=\"0\" dirty=\"0\" borderFillIDRef=\"15\"><hp:subList id=\"\" textDirection=\"HORIZONTAL\" lineWrap=\"BREAK\" vertAlign=\"CENTER\" linkListIDRef=\"0\" linkListNextIDRef=\"0\" textWidth=\"0\" textHeight=\"0\" hasTextRef=\"0\" hasNumRef=\"0\"><hp:p id=\"2147483648\" paraPrIDRef=\"18\" styleIDRef=\"0\" pageBreak=\"0\" columnBreak=\"0\" merged=\"0\"><hp:run charPrIDRef=\"21\"/></hp:p></hp:subList><hp:cellAddr colAddr=\"1\" rowAddr=\"0\"/><hp:cellSpan colSpan=\"1\" rowSpan=\"1\"/><hp:cellSz width=\"566\" height=\"2924\"/><hp:cellMargin left=\"0\" right=\"0\" top=\"141\" bottom=\"141\"/></hp:tc><hp:tc name=\"\" header=\"0\" hasMargin=\"1\" protect=\"0\" editable=\"0\" dirty=\"0\" borderFillIDRef=\"14\"><hp:subList id=\"\" textDirection=\"HORIZONTAL\" lineWrap=\"BREAK\" vertAlign=\"CENTER\" linkListIDRef=\"0\" linkListNextIDRef=\"0\" textWidth=\"0\" textHeight=\"0\" hasTextRef=\"0\" hasNumRef=\"0\"><hp:p id=\"2147483648\" paraPrIDRef=\"23\" styleIDRef=\"0\" pageBreak=\"0\" columnBreak=\"0\" merged=\"0\"><hp:run charPrIDRef=\"31\"><hp:t>⟦H⟧</hp:t></hp:run></hp:p></hp:subList><hp:cellAddr colAddr=\"2\" rowAddr=\"0\"/><hp:cellSpan colSpan=\"1\" rowSpan=\"1\"/><hp:cellSz width=\"10104\" height=\"2924\"/><hp:cellMargin left=\"510\" right=\"510\" top=\"141\" bottom=\"141\"/></hp:tc></hp:tr></hp:tbl><hp:t> </hp:t></hp:run></hp:p>", "secNotice": "<hp:secPr id=\"\" textDirection=\"HORIZONTAL\" spaceColumns=\"1134\" tabStop=\"8000\" tabStopVal=\"4000\" tabStopUnit=\"HWPUNIT\" outlineShapeIDRef=\"1\" memoShapeIDRef=\"0\" textVerticalWidthHead=\"0\" masterPageCnt=\"0\"><hp:grid lineGrid=\"0\" charGrid=\"0\" wonggojiFormat=\"0\"/><hp:startNum pageStartsOn=\"BOTH\" page=\"0\" pic=\"0\" tbl=\"0\" equation=\"0\"/><hp:visibility hideFirstHeader=\"0\" hideFirstFooter=\"0\" hideFirstMasterPage=\"0\" border=\"SHOW_ALL\" fill=\"SHOW_ALL\" hideFirstPageNum=\"0\" hideFirstEmptyLine=\"0\" showLineNumber=\"0\"/><hp:lineNumberShape restartType=\"0\" countBy=\"0\" distance=\"0\" startNumber=\"0\"/><hp:pagePr landscape=\"WIDELY\" width=\"59528\" height=\"84188\" gutterType=\"LEFT_ONLY\"><hp:margin header=\"2834\" footer=\"2834\" gutter=\"0\" left=\"5669\" right=\"5669\" top=\"4252\" bottom=\"2834\"/></hp:pagePr><hp:footNotePr><hp:autoNumFormat type=\"DIGIT\" userChar=\"\" prefixChar=\"\" suffixChar=\")\" supscript=\"0\"/><hp:noteLine length=\"-1\" type=\"SOLID\" width=\"0.12 mm\" color=\"#000000\"/><hp:noteSpacing betweenNotes=\"283\" belowLine=\"567\" aboveLine=\"850\"/><hp:numbering type=\"CONTINUOUS\" newNum=\"1\"/><hp:placement place=\"EACH_COLUMN\" beneathText=\"0\"/></hp:footNotePr><hp:endNotePr><hp:autoNumFormat type=\"DIGIT\" userChar=\"\" prefixChar=\"\" suffixChar=\")\" supscript=\"0\"/><hp:noteLine length=\"14692344\" type=\"SOLID\" width=\"0.12 mm\" color=\"#000000\"/><hp:noteSpacing betweenNotes=\"0\" belowLine=\"567\" aboveLine=\"850\"/><hp:numbering type=\"CONTINUOUS\" newNum=\"1\"/><hp:placement place=\"END_OF_DOCUMENT\" beneathText=\"0\"/></hp:endNotePr><hp:pageBorderFill type=\"BOTH\" borderFillIDRef=\"1\" textBorder=\"PAPER\" headerInside=\"0\" footerInside=\"0\" fillArea=\"PAPER\"><hp:offset left=\"1417\" right=\"1417\" top=\"1417\" bottom=\"1417\"/></hp:pageBorderFill><hp:pageBorderFill type=\"EVEN\" borderFillIDRef=\"1\" textBorder=\"PAPER\" headerInside=\"0\" footerInside=\"0\" fillArea=\"PAPER\"><hp:offset left=\"1417\" right=\"1417\" top=\"1417\" bottom=\"1417\"/></hp:pageBorderFill><hp:pageBorderFill type=\"ODD\" borderFillIDRef=\"1\" textBorder=\"PAPER\" headerInside=\"0\" footerInside=\"0\" fillArea=\"PAPER\"><hp:offset left=\"1417\" right=\"1417\" top=\"1417\" bottom=\"1417\"/></hp:pageBorderFill></hp:secPr><hp:ctrl><hp:colPr id=\"\" type=\"NEWSPAPER\" layout=\"LEFT\" colCount=\"1\" sameSz=\"1\" sameGap=\"0\"/></hp:ctrl><hp:ctrl><hp:pageNum pos=\"BOTTOM_CENTER\" formatType=\"DIGIT\" sideChar=\"-\"/></hp:ctrl>", "secCert": "<hp:secPr id=\"\" textDirection=\"HORIZONTAL\" spaceColumns=\"1134\" tabStop=\"8000\" tabStopVal=\"4000\" tabStopUnit=\"HWPUNIT\" outlineShapeIDRef=\"1\" memoShapeIDRef=\"0\" textVerticalWidthHead=\"0\" masterPageCnt=\"0\"><hp:grid lineGrid=\"0\" charGrid=\"0\" wonggojiFormat=\"0\"/><hp:startNum pageStartsOn=\"BOTH\" page=\"0\" pic=\"0\" tbl=\"0\" equation=\"0\"/><hp:visibility hideFirstHeader=\"0\" hideFirstFooter=\"0\" hideFirstMasterPage=\"0\" border=\"SHOW_ALL\" fill=\"SHOW_ALL\" hideFirstPageNum=\"0\" hideFirstEmptyLine=\"0\" showLineNumber=\"0\"/><hp:lineNumberShape restartType=\"0\" countBy=\"0\" distance=\"0\" startNumber=\"0\"/><hp:pagePr landscape=\"WIDELY\" width=\"59528\" height=\"84188\" gutterType=\"LEFT_ONLY\"><hp:margin header=\"0\" footer=\"0\" gutter=\"0\" left=\"5669\" right=\"5669\" top=\"5669\" bottom=\"4252\"/></hp:pagePr><hp:footNotePr><hp:autoNumFormat type=\"DIGIT\" userChar=\"\" prefixChar=\"\" suffixChar=\")\" supscript=\"0\"/><hp:noteLine length=\"-1\" type=\"SOLID\" width=\"0.12 mm\" color=\"#000000\"/><hp:noteSpacing betweenNotes=\"283\" belowLine=\"567\" aboveLine=\"850\"/><hp:numbering type=\"CONTINUOUS\" newNum=\"1\"/><hp:placement place=\"EACH_COLUMN\" beneathText=\"0\"/></hp:footNotePr><hp:endNotePr><hp:autoNumFormat type=\"DIGIT\" userChar=\"\" prefixChar=\"\" suffixChar=\")\" supscript=\"0\"/><hp:noteLine length=\"14692344\" type=\"SOLID\" width=\"0.12 mm\" color=\"#000000\"/><hp:noteSpacing betweenNotes=\"0\" belowLine=\"567\" aboveLine=\"850\"/><hp:numbering type=\"CONTINUOUS\" newNum=\"1\"/><hp:placement place=\"END_OF_DOCUMENT\" beneathText=\"0\"/></hp:endNotePr><hp:pageBorderFill type=\"BOTH\" borderFillIDRef=\"23\" textBorder=\"PAPER\" headerInside=\"0\" footerInside=\"0\" fillArea=\"PAPER\"><hp:offset left=\"2834\" right=\"2834\" top=\"2834\" bottom=\"2834\"/></hp:pageBorderFill><hp:pageBorderFill type=\"EVEN\" borderFillIDRef=\"23\" textBorder=\"PAPER\" headerInside=\"0\" footerInside=\"0\" fillArea=\"PAPER\"><hp:offset left=\"2834\" right=\"2834\" top=\"2834\" bottom=\"2834\"/></hp:pageBorderFill><hp:pageBorderFill type=\"ODD\" borderFillIDRef=\"23\" textBorder=\"PAPER\" headerInside=\"0\" footerInside=\"0\" fillArea=\"PAPER\"><hp:offset left=\"2834\" right=\"2834\" top=\"2834\" bottom=\"2834\"/></hp:pageBorderFill></hp:secPr><hp:ctrl><hp:colPr id=\"\" type=\"NEWSPAPER\" layout=\"LEFT\" colCount=\"1\" sameSz=\"1\" sameGap=\"0\"/></hp:ctrl>"};
+// ---- 공통: 한글(HWPX) 문단·표 만들기와 ZIP 묶기 ----
+const $=id=>document.getElementById(id);
+function lines(s){return String(s||'').split(/\r?\n/).map(x=>x.trim()).filter(Boolean);}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+let IDN=1000;
+function nid(){return String(++IDN);}
+// 문단 하나. runs: [[글자모양, 글자], ...] 또는 글자모양+글자
+function para(pp,runs,opt){
+  opt=opt||{};
+  if(!Array.isArray(runs)) runs=[[runs,opt.t||'']];
+  const body=runs.map(([c,t])=>t===''||t==null?'<hp:run charPrIDRef="'+c+'"/>':'<hp:run charPrIDRef="'+c+'"><hp:t>'+esc(t)+'</hp:t></hp:run>').join('');
+  return '<hp:p id="0" paraPrIDRef="'+pp+'" styleIDRef="0" pageBreak="'+(opt.pageBreak?1:0)+'" columnBreak="0" merged="0">'+body+'</hp:p>';
+}
+function blank(c,pp){return para(pp||TPL.P.CENTER,[[c,'']]);}
+// 표 하나. widths: 칸 너비(HWPUNIT), rows: [[{t,c,p,bf}, ...], ...]
+function table(widths,rows,opt){
+  opt=opt||{};
+  const W=widths.reduce((a,b)=>a+b,0), rh=opt.rowH||2400;
+  const trs=rows.map((row,ri)=>'<hp:tr>'+row.map((cell,ci)=>{
+    const ps=cell.x||String(cell.t==null?'':cell.t).split(/\n/).map(t=>para(cell.p,[[cell.c,t]])).join('');
+    return '<hp:tc name="" header="0" hasMargin="0" protect="0" editable="0" dirty="0" borderFillIDRef="'+(cell.bf||TPL.B.CELL)+'">'+
+      '<hp:subList id="" textDirection="HORIZONTAL" lineWrap="BREAK" vertAlign="CENTER" linkListIDRef="0" linkListNextIDRef="0" textWidth="0" textHeight="0" hasTextRef="0" hasNumRef="0">'+ps+'</hp:subList>'+
+      '<hp:cellAddr colAddr="'+ci+'" rowAddr="'+ri+'"/><hp:cellSpan colSpan="1" rowSpan="1"/><hp:cellSz width="'+widths[ci]+'" height="'+(cell.h||rh)+'"/>'+
+      '<hp:cellMargin left="510" right="510" top="'+(opt.padV||283)+'" bottom="'+(opt.padV||283)+'"/></hp:tc>';
+  }).join('')+'</hp:tr>').join('');
+  const H=rows.reduce((a,r)=>a+(r[0].h||rh),0), id=nid();
+  return '<hp:p id="0" paraPrIDRef="'+TPL.P.TBL+'" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0"><hp:run charPrIDRef="'+TPL.C.SMALL+'">'+
+    '<hp:tbl id="'+id+'" zOrder="'+(IDN-1000)+'" numberingType="TABLE" textWrap="TOP_AND_BOTTOM" textFlow="BOTH_SIDES" lock="0" dropcapstyle="None" pageBreak="CELL" repeatHeader="1" rowCnt="'+rows.length+'" colCnt="'+widths.length+'" cellSpacing="0" borderFillIDRef="'+(opt.bf||3)+'" noAdjust="0">'+
+    '<hp:sz width="'+W+'" widthRelTo="ABSOLUTE" height="'+H+'" heightRelTo="ABSOLUTE" protect="0"/>'+
+    '<hp:pos treatAsChar="1" affectLSpacing="0" flowWithText="1" allowOverlap="0" holdAnchorAndSO="0" vertRelTo="PARA" horzRelTo="PARA" vertAlign="TOP" horzAlign="LEFT" vertOffset="0" horzOffset="0"/>'+
+    '<hp:outMargin left="0" right="0" top="0" bottom="0"/><hp:inMargin left="510" right="510" top="141" bottom="141"/>'+trs+'</hp:tbl></hp:run></hp:p>';
+}
+// 구역 설정이 든 첫 문단
+function firstPara(pp,c,t,secPr){
+  return '<hp:p id="0" paraPrIDRef="'+pp+'" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0"><hp:run charPrIDRef="'+c+'">'+secPr+(t?'<hp:t>'+esc(t)+'</hp:t>':'<hp:t/>')+'</hp:run></hp:p>';
+}
+function wrapSection(inner){return '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>'+TPL.secOpen+inner+'</hs:sec>';}
+function hpf(title,imgs){
+  return '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?><opf:package xmlns:opf="http://www.idpf.org/2007/opf/" xmlns:dc="http://purl.org/dc/elements/1.1/" version="" unique-identifier="" id=""><opf:metadata><opf:title xml:space="preserve">'+esc(title)+'</opf:title><opf:language>ko</opf:language></opf:metadata><opf:manifest><opf:item id="header" href="Contents/header.xml" media-type="application/xml"/><opf:item id="section0" href="Contents/section0.xml" media-type="application/xml"/><opf:item id="settings" href="settings.xml" media-type="application/xml"/>'+(imgs||[]).map(m=>'<opf:item id="'+m.id+'" href="BinData/'+m.id+'.'+m.ext+'" media-type="image/'+(m.ext==='jpg'?'jpeg':m.ext)+'" isEmbeded="1"/>').join('')+'</opf:manifest><opf:spine><opf:itemref idref="header" linear="yes"/><opf:itemref idref="section0" linear="yes"/></opf:spine></opf:package>';
+}
+async function inflate(b64){
+  const bin=Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
+  return new Uint8Array(await new Response(new Blob([bin]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer());
+}
+async function deflate(u8){
+  return new Uint8Array(await new Response(new Blob([u8]).stream().pipeThrough(new CompressionStream('deflate-raw'))).arrayBuffer());
+}
+const CRC=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0;}return t;})();
+function crc32(u8){let c=0xFFFFFFFF;for(let i=0;i<u8.length;i++)c=CRC[(c^u8[i])&255]^(c>>>8);return (c^0xFFFFFFFF)>>>0;}
+// ZIP 만들기. mimetype은 맨 앞에 압축하지 않고 넣어야 합니다.
+async function makeZip(files){
+  const enc=new TextEncoder(), parts=[], central=[]; let off=0;
+  for(const [name,data,store] of files){
+    const raw=typeof data==='string'?enc.encode(data):data, nm=enc.encode(name);
+    const body=store?raw:await deflate(raw), crc=crc32(raw), method=store?0:8;
+    const lh=new DataView(new ArrayBuffer(30));
+    lh.setUint32(0,0x04034b50,true);lh.setUint16(4,20,true);lh.setUint16(6,0x0800,true);lh.setUint16(8,method,true);
+    lh.setUint32(14,crc,true);lh.setUint32(18,body.length,true);lh.setUint32(22,raw.length,true);lh.setUint16(26,nm.length,true);
+    parts.push(new Uint8Array(lh.buffer),nm,body);
+    const ch=new DataView(new ArrayBuffer(46));
+    ch.setUint32(0,0x02014b50,true);ch.setUint16(4,20,true);ch.setUint16(6,20,true);ch.setUint16(8,0x0800,true);ch.setUint16(10,method,true);
+    ch.setUint32(16,crc,true);ch.setUint32(20,body.length,true);ch.setUint32(24,raw.length,true);ch.setUint16(28,nm.length,true);ch.setUint32(42,off,true);
+    central.push(new Uint8Array(ch.buffer),nm);
+    off+=30+nm.length+body.length;
+  }
+  const csize=central.reduce((a,x)=>a+x.length,0), end=new DataView(new ArrayBuffer(22));
+  end.setUint32(0,0x06054b50,true);end.setUint16(8,files.length,true);end.setUint16(10,files.length,true);end.setUint32(12,csize,true);end.setUint32(16,off,true);
+  return new Blob([...parts,...central,new Uint8Array(end.buffer)],{type:'application/hwp+zip'});
+}
+async function packHwpx(title,sectionXml,preview,imgs){
+  imgs=imgs||[];
+  return makeZip([
+    ['mimetype','application/hwp+zip',true],
+    ['version.xml',TPL.version],
+    ['Contents/header.xml',await inflate(TPL.header)],
+    ['Contents/section0.xml',sectionXml],
+    ['settings.xml',TPL.settings],
+    ['Contents/content.hpf',hpf(title,imgs)],
+    ['Preview/PrvText.txt',preview],
+    ['META-INF/container.xml',TPL.container],
+    ['META-INF/manifest.xml',TPL.manifest],
+    ...imgs.map(m=>['BinData/'+m.id+'.'+m.ext,m.bytes,true])
+  ]);
+}
+function saveBlob(blob,name){
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1500);
+}
+function safeName(s,fb){return (String(s||'').replace(/[\\/:*?"<>|「」]/g,'').trim().slice(0,40))||fb;}
+function say(tab,html,ok){$(tab+'_msg').innerHTML='<div class="msg '+(ok?'ok':'err')+'">'+html+'</div>';}
+
+// ---- 그림 ----
+// 문서에 넣을 그림 모음. 같은 그림은 한 번만 넣습니다.
+function ImageBag(){const list=[],map=new Map();
+  return {list,use(img){if(!map.has(img)){const id='image'+(list.length+1);map.set(img,id);list.push({id,ext:img.ext,bytes:img.bytes});}return map.get(img);}};}
+const MAT='e1="1" e2="0" e3="0" e4="0" e5="1" e6="0"';
+// w,h: HWPUNIT. fl: {x,y} 이면 글 앞에 떠 있는 그림(직인처럼), 없으면 글자처럼 취급
+function picXml(binId,w,h,fl){
+  w=Math.round(w);h=Math.round(h);const id=nid();
+  const pos=fl?'<hp:pos treatAsChar="0" affectLSpacing="0" flowWithText="0" allowOverlap="1" holdAnchorAndSO="0" vertRelTo="PARA" horzRelTo="COLUMN" vertAlign="TOP" horzAlign="LEFT" vertOffset="'+Math.max(0,Math.round(fl.y))+'" horzOffset="'+Math.max(0,Math.round(fl.x))+'"/>'
+    :'<hp:pos treatAsChar="1" affectLSpacing="0" flowWithText="1" allowOverlap="0" holdAnchorAndSO="0" vertRelTo="PARA" horzRelTo="COLUMN" vertAlign="TOP" horzAlign="LEFT" vertOffset="0" horzOffset="0"/>';
+  return '<hp:pic id="'+id+'" zOrder="'+(IDN-1000)+'" numberingType="PICTURE" textWrap="'+(fl?'IN_FRONT_OF_TEXT':'TOP_AND_BOTTOM')+'" textFlow="BOTH_SIDES" lock="0" dropcapstyle="None" href="" groupLevel="0" instid="'+id+'" reverse="0">'+
+    '<hp:offset x="0" y="0"/><hp:orgSz width="'+w+'" height="'+h+'"/><hp:curSz width="'+w+'" height="'+h+'"/><hp:flip horizontal="0" vertical="0"/>'+
+    '<hp:rotationInfo angle="0" centerX="'+(w>>1)+'" centerY="'+(h>>1)+'" rotateimage="1"/>'+
+    '<hp:renderingInfo><hc:transMatrix '+MAT+'/><hc:scaMatrix '+MAT+'/><hc:rotMatrix '+MAT+'/></hp:renderingInfo>'+
+    '<hp:imgRect><hc:pt0 x="0" y="0"/><hc:pt1 x="'+w+'" y="0"/><hc:pt2 x="'+w+'" y="'+h+'"/><hc:pt3 x="0" y="'+h+'"/></hp:imgRect>'+
+    '<hp:imgClip left="0" right="'+w+'" top="0" bottom="'+h+'"/><hp:inMargin left="0" right="0" top="0" bottom="0"/><hp:imgDim dimwidth="'+w+'" dimheight="'+h+'"/>'+
+    '<hc:img binaryItemIDRef="'+binId+'" bright="0" contrast="0" effect="REAL_PIC" alpha="0"/><hp:effects/>'+
+    '<hp:sz width="'+w+'" widthRelTo="ABSOLUTE" height="'+h+'" heightRelTo="ABSOLUTE" protect="0"/>'+pos+
+    '<hp:outMargin left="0" right="0" top="0" bottom="0"/><hp:shapeComment/></hp:pic>';
+}
+function picPara(pp,c,pics,opt){
+  return '<hp:p id="0" paraPrIDRef="'+pp+'" styleIDRef="0" pageBreak="'+(opt&&opt.pageBreak?1:0)+'" columnBreak="0" merged="0"><hp:run charPrIDRef="'+c+'">'+pics+'<hp:t/></hp:run></hp:p>';
+}
+const MM=7200/25.4;
+function imgEl(url){return new Promise((ok,no)=>{const im=new Image();im.onload=()=>ok(im);im.onerror=()=>no(new Error('그림을 읽지 못했습니다'));im.src=url;});}
+async function canvasToImage(cv,name){
+  const b=await new Promise(r=>cv.toBlob(r,'image/png'));
+  return {name,bytes:new Uint8Array(await b.arrayBuffer()),ext:'png',w:cv.width,h:cv.height,url:cv.toDataURL('image/png')};
+}
+// PNG·JPG는 그대로, 나머지(GIF·BMP·WEBP 등)는 PNG로 바꿔 넣습니다.
+async function loadImageFile(file){
+  const url=URL.createObjectURL(file), im=await imgEl(url);
+  const ext=/png/i.test(file.type)?'png':/jpe?g/i.test(file.type)?'jpg':null;
+  if(ext) return {name:file.name,bytes:new Uint8Array(await file.arrayBuffer()),ext,w:im.naturalWidth,h:im.naturalHeight,url};
+  const cv=document.createElement('canvas');cv.width=im.naturalWidth||800;cv.height=im.naturalHeight||600;
+  cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);
+  const r=await canvasToImage(cv,file.name);r.url=url;return r;
+}
+
+// ================= 탭 =================
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('on',p.id==='panel_'+b.dataset.tab));
+});
+const C=TPL.C,P=TPL.P,B=TPL.B;
+function cols(l){return l.split('|').map(x=>x.trim());}
+function val(id){return $(id).value.trim();}
+function setVals(prefix,v,keys){keys.forEach(k=>$(prefix+k).value=v[k]==null?'':v[k]);}
+
+// ---- 예시 그림 만들기 (임의 그림) ----
+async function samplePoster(){
+  const cv=document.createElement('canvas');cv.width=1200;cv.height=560;const g=cv.getContext('2d');
+  g.fillStyle='#eef3f8';g.fillRect(0,0,1200,560);
+  g.fillStyle='#d6e2f0';[[180,120,140],[1050,450,190],[980,90,70]].forEach(([x,y,r])=>{g.beginPath();g.arc(x,y,r,0,7);g.fill();});
+  g.fillStyle='#1f3f7a';g.fillRect(80,180,10,200);
+  g.fillStyle='#1f3f7a';g.font='bold 64px "Malgun Gothic",sans-serif';g.fillText('보고서 작성 실무과정',120,250);
+  g.fillStyle='#444';g.font='34px "Malgun Gothic",sans-serif';g.fillText('12. 9.(수) ~ 12. 10.(목)  ○○청사 △△교육장',120,320);
+  g.fillStyle='#7a8794';g.font='26px "Malgun Gothic",sans-serif';g.fillText('※ 예시 그림입니다. 포스터·약도·사진으로 바꿔 넣으세요.',120,375);
+  return canvasToImage(cv,'예시_홍보그림.png');
+}
+async function sampleSeal(){
+  const cv=document.createElement('canvas');cv.width=360;cv.height=360;const g=cv.getContext('2d');
+  g.strokeStyle='rgba(205,32,31,.9)';g.fillStyle='rgba(205,32,31,.9)';g.lineWidth=22;g.strokeRect(24,24,312,312);
+  g.lineWidth=6;g.strokeRect(50,50,260,260);
+  g.font='bold 104px "Batang","바탕",serif';g.textAlign='center';g.textBaseline='middle';
+  g.lineWidth=10;[[125,125],[235,125]].forEach(([x,y])=>{g.beginPath();g.arc(x,y,36,0,7);g.stroke();});
+  [['시',125,240],['장',235,240]].forEach(([t,x,y])=>g.fillText(t,x,y));
+  return canvasToImage(cv,'예시_직인.png');
+}
+
+// ======================================================
+// ① 교육 신청 안내문
+// ======================================================
+const NK=['title','subtitle','intro','overview','timetable','apply','notes','formNote','formRows'];
+const N_POS=[['intro','안내 문구 아래'],['ov','교육 개요 아래'],['tt','교육 내용 아래'],['ap','신청 방법 아래'],['nt','유의 사항 아래'],['end','맨 끝 (붙임 앞)']];
+let NIMGS=[];   // {img, caption, pos, pct}
+const N_SAMPLE={
+  title:'「보고서 작성 실무과정」 교육생 모집 안내',
+  subtitle:'짧고 정확한 보고서, 함께 연습해 봅시다',
+  intro:'직원들의 보고서 작성 역량을 높이기 위해 실습 중심의 교육을 아래와 같이 운영하오니, 관심 있는 직원의 많은 신청 바랍니다.',
+  overview:['교육명 | 보고서 작성 실무과정',
+    '교육일시 | 2026. 12. 9.(수) ~ 12. 10.(목), 14:00~18:00 (2일, 총 8시간)',
+    '교육장소 | ○○청사 △△교육장',
+    '교육대상 | ○○기관 직원 중 희망자',
+    '모집인원 | 30명 (선착순, 부서별 3명 이내)',
+    '교육방법 | 강의 및 조별 실습'].join('\n'),
+  timetable:['일시 | 교과목 | 주요 내용 | 강사',
+    '12. 9.(수) 14:00~16:00 | 보고서의 기본 | 보고서 종류와 기본 구성, 핵심부터 쓰기 | 홍길동',
+    '12. 9.(수) 16:00~18:00 | 문장 다듬기 | 짧고 쉬운 문장으로 고쳐 쓰기 | 홍길동',
+    '12. 10.(목) 14:00~16:00 | 표와 그림 활용 | 숫자 자료를 한눈에 보이게 정리하기 | 성춘향',
+    '12. 10.(목) 16:00~18:00 | 조별 실습 | 실제 사례로 한 장 보고서 작성 및 발표 | 성춘향'].join('\n'),
+  apply:['신청기간 : 2026. 11. 16.(월) ~ 11. 27.(금) 18:00까지',
+    '신청방법 : 붙임 신청서를 작성하여 담당자 메일로 제출',
+    '- 부서별로 모아 한 번에 제출해 주시기 바랍니다.',
+    '선정결과 : 2026. 12. 1.(화) 개별 안내'].join('\n'),
+  notes:['필기도구를 지참해 주시기 바랍니다.',
+    '수료기준 : 교육시간의 80% 이상 출석 시 수료증 발급',
+    '- 출석은 교육 시작과 끝에 각각 확인합니다.',
+    '※ 문의 : ○○과 홍길동 주무관(000-000-0000)'].join('\n'),
+  formNote:'※ 작성 후 2026. 11. 27.(금)까지 담당자 메일로 제출해 주시기 바랍니다.',
+  formRows:'8'
+};
+function nData(){const d={};NK.forEach(k=>d[k]=val('n_'+k));d.form=$('n_form').checked;d.formRows=Math.min(30,Math.max(1,parseInt(d.formRows)||8));return d;}
+function bulletItems(s){
+  return lines(s).map(l=>{
+    if(/^[-–]/.test(l)) return ['sub',l.replace(/^[-–\s]+/,'')];
+    if(/^※/.test(l)) return ['note',l.replace(/^※\s*/,'')];
+    return ['b',l.replace(/^[○•·▪◦]\s*/,'')];
+  });
+}
+function splitLabel(t){const m=t.match(/^([^:：]{1,12})\s*[:：]\s*(.+)$/);return m?[m[1].trim(),m[2]]:null;}
+function overviewRows(d){return lines(d.overview).map(cols).map(c=>[c[0]||'',c.slice(1).join(' | ')]);}
+function timeRows(d){return lines(d.timetable).map(cols);}
+function nSections(d){
+  const s=[];
+  if(lines(d.overview).length) s.push(['교육 개요','ov']);
+  if(lines(d.timetable).length) s.push(['교육 내용','tt']);
+  if(lines(d.apply).length) s.push(['신청 방법','ap']);
+  if(lines(d.notes).length) s.push(['유의 사항','nt']);
+  return s;
+}
+// 자리가 빠진 그림은 맨 끝으로
+function imgsAt(d,pos){
+  const have=new Set(['intro','end',...nSections(d).map(x=>x[1])]);
+  return NIMGS.filter(m=>(have.has(m.pos)?m.pos:'end')===pos);
+}
+function ttWidths(n){
+  if(n===4) return [10000,12600,17400,7600];
+  const w=Array(n).fill(Math.floor(47600/n)); w[n-1]+=47600-w.reduce((a,b)=>a+b,0); return w;
+}
+function course(d){return (overviewRows(d).find(r=>/교육명|과정명/.test(r[0]))||[])[1]||'';}
+// -- 그림 목록 화면 --
+function nImgList(){
+  $('n_imgs').innerHTML=NIMGS.map((m,i)=>'<div class="imgrow"><img src="'+m.img.url+'" alt="">'+
+    '<div class="ctl"><select data-i="'+i+'" data-k="pos">'+N_POS.map(([v,t])=>'<option value="'+v+'"'+(m.pos===v?' selected':'')+'>'+t+'</option>').join('')+'</select>'+
+    '<select data-i="'+i+'" data-k="pct">'+[100,80,60,40].map(p=>'<option value="'+p+'"'+(m.pct===p?' selected':'')+'>너비 '+p+'%</option>').join('')+'</select>'+
+    '<span class="hint">'+m.img.w+'×'+m.img.h+'</span><button class="mini light" data-del="'+i+'">빼기</button>'+
+    '<input data-i="'+i+'" data-k="caption" placeholder="그림 설명 (비워도 됨)" value="'+esc(m.caption)+'"></div></div>').join('');
+}
+$('n_imgs').addEventListener('input',e=>{const t=e.target;if(t.dataset.i==null)return;const m=NIMGS[+t.dataset.i];
+  m[t.dataset.k]=t.dataset.k==='pct'?+t.value:t.value;nRender();});
+$('n_imgs').addEventListener('change',e=>{const t=e.target;if(t.tagName==='SELECT'){const m=NIMGS[+t.dataset.i];m[t.dataset.k]=t.dataset.k==='pct'?+t.value:t.value;nRender();}});
+$('n_imgs').addEventListener('click',e=>{const i=e.target.dataset.del;if(i==null)return;NIMGS.splice(+i,1);nImgList();nRender();});
+$('n_imgfile').addEventListener('change',async e=>{
+  for(const f of e.target.files){
+    try{NIMGS.push({img:await loadImageFile(f),caption:'',pos:'end',pct:80});}
+    catch(err){say('n','「'+esc(f.name)+'」 그림을 읽지 못했습니다.');}
+  }
+  e.target.value='';nImgList();nRender();
+});
+// -- 미리보기 --
+function nFigHtml(list){return list.map(m=>'<div class="pfig"><img src="'+m.img.url+'" style="width:'+m.pct+'%">'+(m.caption?'<div>&lt; '+esc(m.caption)+' &gt;</div>':'')+'</div>').join('');}
+function nRender(){
+  const d=nData();
+  let h='<div class="paper"><div class="tbox"><div class="t">'+esc(d.title||'제목')+'</div>'+(d.subtitle?'<div class="s">- '+esc(d.subtitle)+' -</div>':'')+'</div>';
+  h+=lines(d.intro).map(t=>'<div class="intro">&nbsp;&nbsp;'+esc(t)+'</div>').join('')+nFigHtml(imgsAt(d,'intro'));
+  nSections(d).forEach(([name,k],i)=>{
+    h+='<div class="sec"><span class="n">'+(i+1)+'</span>'+name+'</div>';
+    if(k==='ov') h+='<table class="dt">'+overviewRows(d).map(([a,b])=>'<tr><td class="h" style="width:22%">'+esc(a)+'</td><td>'+esc(b)+'</td></tr>').join('')+'</table>';
+    if(k==='tt'){const r=timeRows(d),n=Math.max(...r.map(x=>x.length));h+='<table class="dt">'+r.map((row,ri)=>'<tr>'+Array.from({length:n},(_,ci)=>'<td class="'+(ri===0?'h':(ci===n-2&&n>2?'':'c'))+'">'+esc(row[ci]||'')+'</td>').join('')+'</tr>').join('')+'</table>';}
+    if(k==='ap'||k==='nt') h+=bulletItems(k==='ap'?d.apply:d.notes).map(([t,x])=>{
+      if(t==='sub') return '<div class="b2">- '+esc(x)+'</div>';
+      if(t==='note') return '<div class="b3">※ '+esc(x)+'</div>';
+      const lb=splitLabel(x);return '<div class="b1">○ '+(lb?'<b>'+esc(lb[0])+'</b> : '+esc(lb[1]):esc(x))+'</div>';
+    }).join('');
+    h+=nFigHtml(imgsAt(d,k));
+  });
+  h+=nFigHtml(imgsAt(d,'end'));
+  if(d.form) h+='<p style="margin-top:18px"><b>붙임</b>&nbsp; 교육 신청서 1부.&nbsp; 끝.</p>';
+  h+='</div>';
+  if(d.form){
+    const cs=course(d);
+    h+='<div class="paper"><div class="formt">교 육 신 청 서</div>'+(cs?'<p style="text-align:center">('+esc(cs)+')</p>':'')+
+      '<table class="dt"><tr>'+['연번','소속(부서)','직급','성명','연락처','비고'].map(x=>'<td class="h">'+x+'</td>').join('')+'</tr>'+
+      Array.from({length:d.formRows},(_,i)=>'<tr><td class="c">'+(i+1)+'</td><td>&nbsp;</td><td></td><td></td><td></td><td></td></tr>').join('')+'</table>'+
+      (d.formNote?'<p class="b3" style="margin-top:8px">'+esc(d.formNote)+'</p>':'')+'</div>';
+  }
+  $('n_paper').innerHTML=h;
+}
+// -- 한글 문서 --
+function bulletXml(s){
+  return bulletItems(s).map(([t,x])=>{
+    if(t==='sub') return para(P.SUB,[[C.N_BODY,'- '+x]]);
+    if(t==='note') return para(P.NOTE,[[C.N_NOTE,'※ '+x]]);
+    const lb=splitLabel(x);
+    return para(P.BULLET,lb?[[C.N_BODY,'○ '],[C.N_BODY_B,lb[0]],[C.N_BODY,' : '+lb[1]]]:[[C.N_BODY,'○ '+x]]);
+  }).join('');
+}
+function nFigXml(list,bag){
+  return list.map(m=>{
+    let w=47600*m.pct/100, h=w*m.img.h/m.img.w;
+    if(h>52000){w=w*52000/h;h=52000;}
+    return blank(C.SMALL,P.BODY)+picPara(P.CENTER,C.N_BODY,picXml(bag.use(m.img),w,h))+
+      (m.caption?para(P.CENTER,[[C.N_NOTE,'< '+m.caption+' >']]):'');
+  }).join('');
+}
+function nSectionXml(d,bag){
+  let out=firstPara(P.CENTER,C.SMALL,'',TPL.secNotice);
+  const tx=para(P.CENTER,[[C.N_TITLE,d.title]])+(d.subtitle?para(P.CENTER,[[C.N_SUB,'- '+d.subtitle+' -']]):'');
+  out+=table([47600],[[{x:tx,bf:B.TITLE}]],{rowH:4800,padV:567});
+  out+=blank(C.N_BODY,P.BODY);
+  out+=lines(d.intro).map(t=>para(P.BODY,[[C.N_BODY,'  '+t]])).join('')+nFigXml(imgsAt(d,'intro'),bag);
+  nSections(d).forEach(([name,k],i)=>{
+    out+=blank(C.N_BODY,P.BODY)+TPL.SEC.replace(/⟦ID⟧/g,()=>nid()).replace('⟦N⟧',String(i+1)).replace('⟦H⟧',esc(name))+blank(C.SMALL,P.BODY);
+    if(k==='ov') out+=table([10400,37200],overviewRows(d).map(([a,b])=>[
+      {t:a,c:C.N_HEAD,p:P.CELL_C,bf:B.HEAD},{t:b,c:C.N_CELL,p:P.CELL_L}]));
+    if(k==='tt'){
+      const r=timeRows(d),n=Math.max(...r.map(x=>x.length)),w=ttWidths(n);
+      out+=table(w,r.map((row,ri)=>Array.from({length:n},(_,ci)=>ri===0?
+        {t:row[ci]||'',c:C.N_HEAD,p:P.CELL_C,bf:B.HEAD}:
+        {t:row[ci]||'',c:C.N_CELL,p:(ci===n-2&&n>2)?P.CELL_L:P.CELL_C})));
+    }
+    if(k==='ap') out+=bulletXml(d.apply);
+    if(k==='nt') out+=bulletXml(d.notes);
+    out+=nFigXml(imgsAt(d,k),bag);
+  });
+  out+=nFigXml(imgsAt(d,'end'),bag);
+  if(d.form){
+    out+=blank(C.N_BODY,P.BODY)+para(P.BODY,[[C.N_BODY_B,'붙임'],[C.N_BODY,'  교육 신청서 1부.  끝.']]);
+    const cs=course(d);
+    out+=para(P.CENTER,[[C.N_FORM_T,'교 육 신 청 서']],{pageBreak:1});
+    if(cs) out+=para(P.CENTER,[[C.N_BODY,'('+cs+')']]);
+    out+=blank(C.N_BODY,P.BODY);
+    const head=['연번','소속(부서)','직급','성명','연락처','비고'].map(t=>({t,c:C.N_HEAD,p:P.CELL_C,bf:B.HEAD}));
+    const rows=Array.from({length:d.formRows},(_,i)=>[String(i+1),'','','','',''].map(t=>({t,c:C.N_CELL,p:P.CELL_C})));
+    out+=table([4000,13000,7000,7000,10000,6600],[head,...rows],{rowH:2800});
+    if(d.formNote) out+=blank(C.SMALL,P.BODY)+para(P.NOTE,[[C.N_NOTE,d.formNote.replace(/^※\s*/,'※ ')]]);
+  }
+  return wrapSection(out);
+}
+$('n_dl').onclick=async()=>{
+  try{
+    const d=nData();
+    if(!d.title){say('n','제목을 먼저 적어 주세요.');return;}
+    IDN=1000;const bag=ImageBag();
+    const xml=nSectionXml(d,bag);
+    const prv=[d.title,d.subtitle].concat(lines(d.intro),lines(d.overview),lines(d.apply)).join('\r\n');
+    const name=safeName(d.title,'교육안내문')+'.hwpx';
+    saveBlob(await packHwpx(d.title,xml,prv,bag.list),name);
+    say('n',esc(name)+' 를 내려받았습니다'+(bag.list.length?' (그림 '+bag.list.length+'개 포함)':'')+'. 한글에서 열어 확인해 주세요.',true);
+  }catch(e){say('n','만들지 못했습니다: '+esc(e.message));}
+};
+async function nFill(v,withImg){
+  setVals('n_',v,NK);$('n_form').checked=true;
+  NIMGS=withImg?[{img:await samplePoster(),caption:'교육 홍보 그림(예시)',pos:'end',pct:80}]:[];
+  nImgList();nRender();$('n_msg').innerHTML='';
+}
+$('n_sample').onclick=()=>nFill(N_SAMPLE,true);
+$('n_clear').onclick=()=>nFill({formRows:'8'},false);
+NK.forEach(k=>$('n_'+k).addEventListener('input',nRender));$('n_form').addEventListener('change',nRender);
+
+// ======================================================
+// ② 수료증
+// ======================================================
+const CK=['roster','course','period','hours','body','prefix','start','digits','issued','issuer','sealmm','logomm'];
+let SEAL=null, LOGO=null;
+const C_SAMPLE={
+  roster:['○○시 ○○과, 주무관, 홍길동, 1990. 1. 1.',
+    '○○시 △△과, 주무관, 성춘향, 1992. 2. 2.',
+    '○○시 □□과, 주사보, 이몽룡, 1988. 3. 3.',
+    '○○시 ◇◇과, 주사, 임꺽정, 1985. 4. 4.'].join('\n'),
+  course:'보고서 작성 실무과정',
+  period:'2026. 12. 9. ~ 2026. 12. 10.',
+  hours:'8시간',
+  body:'위 사람은 {교육기간} 실시한 「{과정명}」({교육시간})을 성실히 이수하였으므로 이 증서를 수여합니다.',
+  prefix:'2026-00-', start:'1', digits:'3',
+  issued:'2026-12-10', issuer:'○○시장', sealmm:'20', logomm:'15'
+};
+function cData(){const d={};CK.forEach(k=>d[k]=val('c_'+k));d.omit=$('c_omit').checked;
+  d.start=Math.max(1,parseInt(d.start)||1);d.digits=Math.min(6,Math.max(1,parseInt(d.digits)||3));
+  d.sealmm=Math.min(40,Math.max(8,parseFloat(d.sealmm)||20));d.logomm=Math.min(40,Math.max(5,parseFloat(d.logomm)||15));return d;}
+function people(d){
+  return lines(d.roster).map(l=>{
+    const c=(l.includes('\t')?l.split('\t'):l.split(',')).map(x=>x.trim());
+    if(c.length===1) return {org:'',rank:'',name:c[0],birth:''};
+    return {org:c[0]||'',rank:c[1]||'',name:c[2]||'',birth:c[3]||''};
+  });
+}
+function certNo(d,i){return '제 '+d.prefix+String(d.start+i).padStart(d.digits,'0')+' 호';}
+function dateText(v){const m=String(v).match(/^(\d{4})-(\d{2})-(\d{2})$/);return m?(+m[1])+'년 '+(+m[2])+'월 '+(+m[3])+'일':v;}
+function bodyText(d,p){
+  let t=d.body.replace(/\{성명\}/g,p.name).replace(/\{과정명\}/g,d.course).replace(/\{교육기간\}/g,d.period);
+  t=d.hours?t.replace(/\{교육시간\}/g,d.hours):t.replace(/\s*\(\{교육시간\}\)|\s*\{교육시간\}/g,'');
+  return t.replace(/\s{2,}/g,' ').trim();
+}
+function infoRows(d,p){
+  return [['소속',p.org],['직급',p.rank],['성명',p.name],['생년월일',p.birth],['과정명',d.course],
+    ['교육기간',d.period+(d.hours&&!/\{교육시간\}/.test(d.body)?' ('+d.hours+')':'')]].filter(x=>x[1]);
+}
+function thumb(id,img){$(id).innerHTML=img?'<img src="'+img.url+'" alt="">':'<div class="empty">없음</div>';}
+function cRender(){
+  const d=cData(), all=people(d), ps=all.filter(p=>p.name), bad=all.length-ps.length;
+  thumb('c_sealthumb',SEAL);thumb('c_logothumb',LOGO);
+  $('c_count').innerHTML='수료증 <b>'+ps.length+'</b>장'+(bad?' · <span style="color:var(--warn)">성명이 빈 줄 '+bad+'개는 빠집니다</span>':'');
+  const sealW=d.sealmm/210*100, fs=3.7;
+  const logo=LOGO?'<div class="logo"><img src="'+LOGO.url+'" style="height:'+(d.logomm/210*100)+'cqw"></div>':'';
+  const issuer=()=>{
+    const t=esc(d.issuer);
+    if(SEAL) return '<span>'+t+'<img class="seal" src="'+SEAL.url+'" style="width:'+sealW+'cqw;right:'+(fs/2-sealW/2)+'cqw;margin-top:'+(-sealW/2)+'cqw"></span>';
+    return t+(d.omit?' <small>(직인생략)</small>':'');
+  };
+  $('c_paper').innerHTML=ps.map((p,i)=>'<div class="cert"><div class="frame"></div><div class="in">'+
+    '<div class="no">'+esc(certNo(d,i))+'</div>'+logo+'<div class="tt">수 료 증</div>'+
+    '<table>'+infoRows(d,p).map(([a,b])=>'<tr><td class="l">'+esc(a)+'</td><td class="c">:</td><td>'+esc(b)+'</td></tr>').join('')+'</table>'+
+    '<div class="body">'+esc(bodyText(d,p))+'</div><div class="dt">'+esc(dateText(d.issued))+'</div>'+
+    '<div class="is">'+issuer()+'</div></div></div>').join('')||'<p class="note">명단을 넣으면 여기에 수료증이 나타납니다.</p>';
+}
+// 발급자 글자 폭 어림(HWPUNIT, 22pt 기준)
+function textWidth(t,size){let w=0;for(const ch of t) w+=/[ -~]/.test(ch)?size*.5:size;return w;}
+function certXml(d,p,i,bag){
+  const gap=n=>Array.from({length:n},()=>blank(C.CERT_TEXT)).join('');
+  let out=i===0?firstPara(P.LEFT,C.SMALL,certNo(d,i),TPL.secCert):para(P.LEFT,[[C.SMALL,certNo(d,i)]],{pageBreak:1});
+  if(LOGO){
+    let h=d.logomm*MM, w=h*LOGO.w/LOGO.h; if(w>36000){h=h*36000/w;w=36000;}
+    out+=gap(1)+picPara(P.CENTER,C.CERT_TEXT,picXml(bag.use(LOGO),w,h))+gap(1);
+  } else out+=gap(2);
+  out+=para(P.CENTER,[[C.CERT_TITLE,'수   료   증']])+gap(3);
+  out+=table([9000,1800,26000],infoRows(d,p).map(([a,b])=>[
+    {t:a,c:C.CERT_LABEL,p:P.DIST,bf:1},{t:':',c:C.CERT_TEXT,p:P.CELL_C,bf:1},{t:b,c:C.CERT_TEXT,p:P.CELL_L,bf:1}]),{rowH:2600,padV:141,bf:1});
+  out+=gap(1)+para(P.CERT_BODY,[[C.CERT_TEXT,bodyText(d,p)]])+gap(2);
+  out+=para(P.CENTER,[[C.CERT_TEXT,dateText(d.issued)]]);
+  if(SEAL){
+    // 발급자 바로 위 빈 줄에 직인을 띄워, 발급자 끝 글자에 겹치게 합니다.
+    const S=d.sealmm*MM, colW=48190, tw=textWidth(d.issuer,2200), end=(colW+tw)/2;
+    const sh=S*SEAL.h/SEAL.w;
+    out+=picPara(P.CENTER,C.CERT_TEXT,picXml(bag.use(SEAL),S,sh,{x:end-1100-S/2,y:2560+1150-sh/2}));
+    out+=para(P.CENTER,[[C.CERT_ISSUER,d.issuer]]);
+  } else {
+    out+=gap(1)+para(P.CENTER,d.omit?[[C.CERT_ISSUER,d.issuer],[C.SMALL,'  (직인생략)']]:[[C.CERT_ISSUER,d.issuer]]);
+  }
+  return out;
+}
+function cCheck(){
+  const d=cData(), ps=people(d).filter(p=>p.name);
+  if(!ps.length){say('c','명단에 성명을 한 명 이상 적어 주세요.');return null;}
+  if(!d.course){say('c','과정명을 적어 주세요.');return null;}
+  return [d,ps];
+}
+$('c_dl').onclick=async()=>{
+  try{
+    const r=cCheck(); if(!r) return; const [d,ps]=r;
+    IDN=1000;const bag=ImageBag();
+    const xml=wrapSection(ps.map((p,i)=>certXml(d,p,i,bag)).join(''));
+    const name=safeName(d.course,'과정')+'_수료증_'+ps.length+'명.hwpx';
+    saveBlob(await packHwpx(d.course+' 수료증',xml,ps.map((p,i)=>certNo(d,i)+' '+p.name).join('\r\n'),bag.list),name);
+    say('c',esc(name)+' 를 내려받았습니다. 한 사람당 한 쪽입니다.',true);
+  }catch(e){say('c','만들지 못했습니다: '+esc(e.message));}
+};
+$('c_csv').onclick=()=>{
+  const r=cCheck(); if(!r) return; const [d,ps]=r;
+  const q=v=>'"'+String(v).replace(/"/g,'""')+'"';
+  const rows=[['증서번호','소속','직급','성명','생년월일','과정명','교육기간','교육시간','발급일']]
+    .concat(ps.map((p,i)=>[d.prefix+String(d.start+i).padStart(d.digits,'0'),p.org,p.rank,p.name,p.birth,d.course,d.period,d.hours,dateText(d.issued)]));
+  saveBlob(new Blob(['﻿'+rows.map(x=>x.map(q).join(',')).join('\r\n')],{type:'text/csv'}),safeName(d.course,'과정')+'_발급대장.csv');
+  say('c','발급대장을 내려받았습니다. 다음 발급 때는 시작 번호를 '+(d.start+ps.length)+'번으로 바꿔 주세요.',true);
+};
+$('c_print').onclick=()=>{if(cCheck()) window.print();};
+async function pickTo(input,set){const f=input.files[0];if(!f)return;try{set(await loadImageFile(f));}catch(e){say('c','그림을 읽지 못했습니다.');}input.value='';cRender();}
+$('c_sealfile').addEventListener('change',e=>pickTo(e.target,v=>SEAL=v));
+$('c_logofile').addEventListener('change',e=>pickTo(e.target,v=>LOGO=v));
+$('c_sealdel').onclick=()=>{SEAL=null;cRender();};
+$('c_logodel').onclick=()=>{LOGO=null;cRender();};
+async function cFill(v,withSeal){
+  setVals('c_',v,CK);$('c_omit').checked=false;
+  SEAL=withSeal?await sampleSeal():null;LOGO=null;cRender();$('c_msg').innerHTML='';
+}
+$('c_sample').onclick=()=>cFill(C_SAMPLE,true);
+$('c_clear').onclick=()=>cFill({prefix:C_SAMPLE.prefix,start:'1',digits:'3',issued:C_SAMPLE.issued,issuer:C_SAMPLE.issuer,body:C_SAMPLE.body,sealmm:'20',logomm:'15'},false);
+CK.forEach(k=>$('c_'+k).addEventListener('input',cRender));$('c_omit').addEventListener('change',cRender);
+
+nFill(N_SAMPLE,true);cFill(C_SAMPLE,true);
+</script>
+</body>
+</html>
